@@ -15,20 +15,20 @@ import com.example.abhishek.bookcatalogwithfragment.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenreDetailsFragment extends Fragment {
-    private static final String ARGS_GENRE_ID = "genreId";
+public class GenreEditFragment extends Fragment {
+    private static final String ARGS_GENRE_NAME = "genreName";
 
-    private String genreId;
+    private String genreName;
 
-    public static GenreDetailsFragment getInstance(String genreId){
-        GenreDetailsFragment fragment = new GenreDetailsFragment();
+    public static GenreEditFragment getInstance(String genreId){
+        GenreEditFragment fragment = new GenreEditFragment();
         Bundle args = new Bundle();
-        args.putString(ARGS_GENRE_ID, genreId);
+        args.putString(ARGS_GENRE_NAME, genreId);
         fragment.setArguments(args);
         return  fragment;
     }
 
-    public GenreDetailsFragment() {
+    public GenreEditFragment() {
         // Required empty public constructor
     }
 
@@ -37,13 +37,13 @@ public class GenreDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if(savedInstanceState==null){
             if(getArguments()==null)
-                throw new RuntimeException("GenreDetailsFragment must have arguments set. Are you calling GenreDetailsFragment constructor directly? If so, consider using getInstance()");
+                throw new RuntimeException("GenreEditFragment must have arguments set. Are you calling GenreEditFragment constructor directly? If so, consider using getInstance()");
             Bundle args = getArguments();
 
-            if(!args.containsKey(ARGS_GENRE_ID))
-                throw new RuntimeException("GenreDetailsFragment has arguments set, but arguments does not contain any genreId");
+            if(!args.containsKey(ARGS_GENRE_NAME))
+                throw new RuntimeException("GenreEditFragment has arguments set, but arguments does not contain any genreId");
 
-            genreId=args.getString(ARGS_GENRE_ID);
+            genreName=args.getString(ARGS_GENRE_NAME);
         }else{
 
         }
@@ -55,7 +55,7 @@ public class GenreDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_genre_details, container, false);
         TextView tvGenreId = (TextView) v.findViewById(R.id.tvGenreId);
-        tvGenreId.setText(String.format("You have selected %s as genre id", genreId));
+        tvGenreId.setText(String.format("You have selected %s as genre id", genreName));
         return v;
     }
 

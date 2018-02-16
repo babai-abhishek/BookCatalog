@@ -39,12 +39,11 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
-//    private RecyclerEditDeleteClickActionListener recyclerEditDeleteClickActionListener;
+    private ListItemClickListener listItemClickListener;
 
-    public GenreAdapter(List<Genre> list) {
+    public GenreAdapter(List<Genre> list, ListItemClickListener listItemClickListener) {
         this.genreList = list;
-        // this.context = context;
-       // this.recyclerEditDeleteClickActionListener = recyclerEditDeleteClickActionListener;
+        this.listItemClickListener = listItemClickListener;
     }
 
     @Override
@@ -79,25 +78,19 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             GenreViewHolder holder = (GenreViewHolder) rvHolder;
             final Genre genre = genreList.get(position);
             holder.bind(genre);
-           /* holder.btnEdit.setOnClickListener(new View.OnClickListener() {
+            holder.btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    recyclerEditDeleteClickActionListener.onAction(genreList.indexOf(genre), ACTION_EDIT);
+                    listItemClickListener.onAction(genreList.indexOf(genre), ACTION_EDIT);
                 }
             });
             holder.btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    recyclerEditDeleteClickActionListener.onAction(genreList.indexOf(genre), ACTION_DELETE);
+                    listItemClickListener.onAction(genreList.indexOf(genre), ACTION_DELETE);
                 }
             });
-            holder.genreNameTextView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    recyclerEditDeleteClickActionListener.onAction(genreList.indexOf(genre), ACTION_NAME_LONG_PRESS);
-                    return true;
-                }
-            });*/
+
         }
 
     }

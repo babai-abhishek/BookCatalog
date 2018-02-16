@@ -9,17 +9,18 @@ import android.widget.FrameLayout;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Genre.GenreDetailsFragment;
+import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 
 public class MainActivity extends AppCompatActivity implements
-        OptionsFragment.OptionsFragmentInteractionListener{
+        OptionsFragment.OptionsFragmentInteractionListener,
+        GenreListFragment.GenreListFragmentInteractionListener{
 
     private static final String TAG_FRAGMENT_OPTIONS="OptionsFragment";
     private static final String TAG_FRAGMENT_GENRE_LIST="GenreListFragment";
     private static final String TAG_FRAGMENT_AUTHOR_LIST="AuthorListFragment";
     private static final String TAG_FRAGMENT_BOOK_LIST="BookListFragment";
-    private static final String TAG_FRAGMENT_GENRE_DETAILS="GenreDetailsFragment";
+    private static final String TAG_FRAGMENT_GENRE_DETAILS="GenreEditFragment";
 
     /*private static String KEY_RESTORE_GENRE_LIST_FRAGMENT = "restoreGenreFragment";
     private static boolean restoreGenreFragment = false;*/
@@ -105,11 +106,11 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
     }
 
-   /* @Override
-    public void onGenreSelected(String genreId) {
+    @Override
+    public void onGenreSelected(String genreName) {
         manager.beginTransaction()
-                .replace(R.id.flFragmentContainer, GenreDetailsFragment.getInstance(genreId), TAG_FRAGMENT_GENRE_DETAILS)
-                .addToBackStack(TAG_FRAGMENT_GENRE_DETAILS)
+                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genreName), TAG_FRAGMENT_GENRE_DETAILS)
+
                 .commit();
-    }*/
+    }
 }

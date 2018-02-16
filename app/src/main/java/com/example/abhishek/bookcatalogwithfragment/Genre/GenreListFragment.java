@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.GenreAdapter;
+import com.example.abhishek.bookcatalogwithfragment.Adapters.ListItemClickListener;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,9 +40,9 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenreListFragment extends Fragment {
+public class GenreListFragment extends Fragment implements ListItemClickListener{
 
-    //  private GenreListFragmentInteractionListener listener;
+    private GenreListFragmentInteractionListener listener;
 
     private static final String ACTION_GENRE_LIST_API_SUCCESS = "com.example.abhishek.catalogwithretro.api.genres.all.result.success";
     private static final String ACTION_GENRE_LIST_API_FAILURE = "com.example.abhishek.catalogwithretro.api.genres.all.result.failure";
@@ -93,11 +95,11 @@ public class GenreListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-       /* if(context instanceof GenreListFragmentInteractionListener){
+        if(context instanceof GenreListFragmentInteractionListener){
             listener= (GenreListFragmentInteractionListener) context;
         } else{
             throw new RuntimeException(context.getClass().getSimpleName()+" must implement GenreList.GenreListFragmentInteractionListener");
-        }*/
+        }
     }
 
     @Override
@@ -113,7 +115,7 @@ public class GenreListFragment extends Fragment {
         mProgressDialog.setCancelable(false);
 
         genres = new ArrayList<>();
-        adapter=new GenreAdapter(genres);
+        adapter=new GenreAdapter(genres, this);
 
         loadGenres();
 
@@ -150,10 +152,9 @@ public class GenreListFragment extends Fragment {
 
 
 
-   /* public  interface GenreListFragmentInteractionListener{
-        void onGenreSelected(String genreId);
+    public  interface GenreListFragmentInteractionListener{
+        void onGenreSelected(String genreName);
     }
-*/
 
 
    @Override
@@ -230,5 +231,41 @@ public class GenreListFragment extends Fragment {
     private void postLoad() {
         if (isGenreLoaded)
             hideLoading();
+    }
+
+    @Override
+    public void onAction(int position, int action) {
+
+        Genre g = genres.get(position);
+        switch (action) {
+            case GenreAdapter.ACTION_EDIT:
+                //shouldReloadOnResume = true;
+                //Toast.makeText(GenreActivity.this, g.getName() + " Edit", Toast.LENGTH_SHORT).show();
+                /*Intent intent = new Intent(GenreActivity.this, EditGenreActivity.class);
+                intent.putExtra("genre_name", g.getName());
+                intent.putExtra("genre_id", g.getId());
+                startActivity(intent);*/
+              //  Toast.makeText(getActivity(), "Edit clicked .", Toast.LENGTH_SHORT).show();
+                listener.onGenreSelected(g.getName());
+                break;
+
+            case GenreAdapter.ACTION_DELETE:
+                //  Toast.makeText(GenreActivity.this, g.getName() + " Delete", Toast.LENGTH_SHORT).show();
+                Call<ResponseBody> call = genreService.deleteGenreEntry(g.getId());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        // Toast.makeText(GenreActivity.this, "Sucessfully deleted entry",Toast.LENGTH_SHORT).show();
+                        loadGenres();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                     //    Log.e(TAG, t.toString());
+                    }
+                });
+                break;
+        }
+
     }
 }
