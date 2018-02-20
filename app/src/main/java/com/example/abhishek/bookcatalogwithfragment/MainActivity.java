@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG_FRAGMENT_GENRE_LIST="GenreListFragment";
     private static final String TAG_FRAGMENT_AUTHOR_LIST="AuthorListFragment";
     private static final String TAG_FRAGMENT_BOOK_LIST="BookListFragment";
-    private static final String TAG_FRAGMENT_GENRE_DETAILS="GenreEditFragment";
+    private static final String TAG_FRAGMENT_EDIT_GENRE ="GenreEditFragment";
 
     /*private static String KEY_RESTORE_GENRE_LIST_FRAGMENT = "restoreGenreFragment";
     private static boolean restoreGenreFragment = false;*/
@@ -107,10 +107,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onGenreSelected(String genreName) {
+    public void onGenreSelected(String genreName, String genreId) {
         manager.beginTransaction()
-                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genreName), TAG_FRAGMENT_GENRE_DETAILS)
-
+                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genreName, genreId), TAG_FRAGMENT_EDIT_GENRE)
+                .addToBackStack(TAG_FRAGMENT_EDIT_GENRE)
                 .commit();
     }
 }

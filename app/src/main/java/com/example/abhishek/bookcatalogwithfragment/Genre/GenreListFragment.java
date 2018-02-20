@@ -44,12 +44,13 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
 
     private GenreListFragmentInteractionListener listener;
 
-    private static final String ACTION_GENRE_LIST_API_SUCCESS = "com.example.abhishek.catalogwithretro.api.genres.all.result.success";
-    private static final String ACTION_GENRE_LIST_API_FAILURE = "com.example.abhishek.catalogwithretro.api.genres.all.result.failure";
+    private static final String ACTION_GENRE_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.genres.all.result.success";
+    private static final String ACTION_GENRE_LIST_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.genres.all.result.failure";
     private static final String KEY_GENRES = "genres";
 
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
+    private boolean shouldReloadOnResume = false;
 
     private RecyclerView recyclerView;
 
@@ -133,27 +134,13 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
-       /* final EditText etGenreId = (EditText) v.findViewById(R.id.etGenreId);
-        Button btnSendToDetails = (Button) v.findViewById(R.id.btnSendToDetails);
-        btnSendToDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String genreId = etGenreId.getText().toString().trim();
-                if(genreId.isEmpty()){
-                    Toast.makeText(getActivity(), "Enter Genre Id", Toast.LENGTH_SHORT).show();
-                } else {
-                    listener.onGenreSelected(genreId);
-                }
-            }
-        });*/
-
         return v;
     }
 
 
 
     public  interface GenreListFragmentInteractionListener{
-        void onGenreSelected(String genreName);
+        void onGenreSelected(String genreName, String genreId);
     }
 
 
@@ -167,11 +154,11 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
        filter.addAction(ACTION_GENRE_LIST_API_FAILURE);
        broadcastManager.registerReceiver(broadcastReceiver, filter);
 
-      /* if(shouldReloadOnResume){
+       if(shouldReloadOnResume){
            loadGenres();
        }
 
-       shouldReloadOnResume=false;*/
+       shouldReloadOnResume=false;
    }
 
     @Override
@@ -239,14 +226,14 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         Genre g = genres.get(position);
         switch (action) {
             case GenreAdapter.ACTION_EDIT:
-                //shouldReloadOnResume = true;
+                shouldReloadOnResume = true;
                 //Toast.makeText(GenreActivity.this, g.getName() + " Edit", Toast.LENGTH_SHORT).show();
                 /*Intent intent = new Intent(GenreActivity.this, EditGenreActivity.class);
                 intent.putExtra("genre_name", g.getName());
                 intent.putExtra("genre_id", g.getId());
                 startActivity(intent);*/
               //  Toast.makeText(getActivity(), "Edit clicked .", Toast.LENGTH_SHORT).show();
-                listener.onGenreSelected(g.getName());
+                listener.onGenreSelected(g.getName(),g.getId());
                 break;
 
             case GenreAdapter.ACTION_DELETE:
