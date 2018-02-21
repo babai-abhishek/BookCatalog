@@ -5,22 +5,26 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
+import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 
 public class MainActivity extends AppCompatActivity implements
         OptionsFragment.OptionsFragmentInteractionListener,
-        GenreListFragment.GenreListFragmentInteractionListener{
+        GenreListFragment.GenreListFragmentInteractionListener,
+        GenreListFragment.GenreFabuttonClickListener{
 
     private static final String TAG_FRAGMENT_OPTIONS="OptionsFragment";
     private static final String TAG_FRAGMENT_GENRE_LIST="GenreListFragment";
     private static final String TAG_FRAGMENT_AUTHOR_LIST="AuthorListFragment";
     private static final String TAG_FRAGMENT_BOOK_LIST="BookListFragment";
-    private static final String TAG_FRAGMENT_EDIT_GENRE ="GenreEditFragment";
+    private static final String TAG_FRAGMENT_GENRE_EDIT ="GenreEditFragment";
+    private static final String TAG_FRAGMENT_GENRE_ADD ="GenreAddFragment";
 
     /*private static String KEY_RESTORE_GENRE_LIST_FRAGMENT = "restoreGenreFragment";
     private static boolean restoreGenreFragment = false;*/
@@ -52,26 +56,7 @@ public class MainActivity extends AppCompatActivity implements
                 optionsFragment = (OptionsFragment) manager.findFragmentByTag(TAG_FRAGMENT_OPTIONS);
             }
         }*/
-        /*btnToggle.setOnClickListener(new View.OnClickListener(){
 
-            @Override
-            public void onClick(View v) {
-                //
-                Fragment fragment = manager.findFragmentById(R.id.flFragmentContainer);
-                //Log.d("TEST", fragment.getClass().getSimpleName());
-                if(fragment instanceof OptionsFragment){
-                    manager.beginTransaction()
-                            .replace(R.id.flFragmentContainer, new GenreListFragment(), TAG_FRAGMENT_GENRE_LIST)
-                            .addToBackStack(TAG_FRAGMENT_GENRE_LIST)
-                            .commit();
-                } else if(fragment instanceof GenreListFragment){
-                    manager.beginTransaction()
-                            .replace(R.id.flFragmentContainer, new OptionsFragment(), TAG_FRAGMENT_OPTIONS)
-                            .addToBackStack(TAG_FRAGMENT_OPTIONS)
-                            .commit();
-                }
-            }
-        });*/
     }
 
   /*  @Override
@@ -80,6 +65,24 @@ public class MainActivity extends AppCompatActivity implements
         outState.putBoolean(KEY_RESTORE_GENRE_LIST_FRAGMENT,restoreGenreFragment);
     }
 */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.update_genre:
+                GenreEditFragment genreEditFragment = (GenreEditFragment) manager.findFragmentByTag(TAG_FRAGMENT_GENRE_EDIT);
+                genreEditFragment.updateGenre();
+                return true;
+            case R.id.add_genre:
+                GenreAddFragment genreAddFragment = (GenreAddFragment) manager.findFragmentByTag(TAG_FRAGMENT_GENRE_ADD);
+                genreAddFragment.addNewGenre();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public void onGenreClicked(Fragment fragment) {
           //  restoreGenreFragment = true;
@@ -109,8 +112,16 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onGenreSelected(String genreName, String genreId) {
         manager.beginTransaction()
-                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genreName, genreId), TAG_FRAGMENT_EDIT_GENRE)
-                .addToBackStack(TAG_FRAGMENT_EDIT_GENRE)
+                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genreName, genreId), TAG_FRAGMENT_GENRE_EDIT)
+                .addToBackStack(TAG_FRAGMENT_GENRE_EDIT)
+                .commit();
+    }
+
+    @Override
+    public void onGenreFabClick() {
+        manager.beginTransaction()
+                .replace(R.id.flFragmentContainer, new GenreAddFragment(), TAG_FRAGMENT_GENRE_ADD)
+                .addToBackStack(TAG_FRAGMENT_GENRE_ADD)
                 .commit();
     }
 }

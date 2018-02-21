@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,6 +34,7 @@ public class GenreEditFragment extends Fragment {
     GenreInterface genreService = ApiClient.getClient().create(GenreInterface.class);
 
     private String genreName, genreID;
+    EditText etGenreName;
 
     public static GenreEditFragment getInstance(String genreName, String genreId){
         GenreEditFragment fragment = new GenreEditFragment();
@@ -63,6 +66,12 @@ public class GenreEditFragment extends Fragment {
         }else{
 
         }
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+       inflater.inflate(R.menu.genre_edit_fragment,menu);
     }
 
     @Override
@@ -71,29 +80,34 @@ public class GenreEditFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_genre_edit, container, false);
 
-        final EditText etGenreName = (EditText) v.findViewById(R.id.et_EditGenreType);
+        etGenreName = (EditText) v.findViewById(R.id.et_EditGenreType);
         etGenreName.setText(String.format(genreName));
 
-        Button btnUpdateGenre = (Button) v.findViewById(R.id.btn_SaveEditGenre);
+       /* Button btnUpdateGenre = (Button) v.findViewById(R.id.btn_SaveEditGenre);
         btnUpdateGenre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<Genre> call = genreService.updateGenreEntry(genreID,new Genre(etGenreName.getText().toString()));
-                call.enqueue(new Callback<Genre>() {
-                    @Override
-                    public void onResponse(Call<Genre> call, Response<Genre> response) {
-                        Toast.makeText(getActivity(), "Sucessfully updated with new name "+response.body().getName(),Toast.LENGTH_SHORT).show();
-                        getActivity().onBackPressed();
-                    }
+                updateGenre();
+            }
+        });*/
+        return v;
+    }
 
-                    @Override
-                    public void onFailure(Call<Genre> call, Throwable t) {
-                        // Log.e(TAG,t.toString());
-                    }
-                });
+    public void updateGenre(){
+
+        Call<Genre> call = genreService.updateGenreEntry(genreID,new Genre(etGenreName.getText().toString()));
+        call.enqueue(new Callback<Genre>() {
+            @Override
+            public void onResponse(Call<Genre> call, Response<Genre> response) {
+                Toast.makeText(getActivity(), "Sucessfully updated with new name "+response.body().getName(),Toast.LENGTH_SHORT).show();
+                getActivity().onBackPressed();
+            }
+
+            @Override
+            public void onFailure(Call<Genre> call, Throwable t) {
+                // Log.e(TAG,t.toString());
             }
         });
-        return v;
     }
 
 }

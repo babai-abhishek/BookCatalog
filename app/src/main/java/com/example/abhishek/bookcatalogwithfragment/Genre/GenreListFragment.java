@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -43,6 +44,7 @@ import retrofit2.Response;
 public class GenreListFragment extends Fragment implements ListItemClickListener{
 
     private GenreListFragmentInteractionListener listener;
+    private GenreFabuttonClickListener fabuttonClickListener;
 
     private static final String ACTION_GENRE_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.genres.all.result.success";
     private static final String ACTION_GENRE_LIST_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.genres.all.result.failure";
@@ -53,6 +55,7 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
     private boolean shouldReloadOnResume = false;
 
     private RecyclerView recyclerView;
+    private FloatingActionButton fabAddGenre;
 
     List<Genre> genres = new ArrayList<>();
     GenreAdapter adapter;
@@ -96,10 +99,11 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof GenreListFragmentInteractionListener){
+        if(context instanceof GenreListFragmentInteractionListener && context instanceof GenreFabuttonClickListener){
+            fabuttonClickListener = (GenreFabuttonClickListener) context;
             listener= (GenreListFragmentInteractionListener) context;
         } else{
-            throw new RuntimeException(context.getClass().getSimpleName()+" must implement GenreList.GenreListFragmentInteractionListener");
+            throw new RuntimeException(context.getClass().getSimpleName()+" must implement GenreList.GenreListFragmentInteractionListener and GenreList.GenreFabuttonClickListener both");
         }
     }
 
@@ -134,6 +138,15 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
+        fabAddGenre = (FloatingActionButton) v.findViewById(R.id.fab_add_genre);
+        fabAddGenre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shouldReloadOnResume = true;
+                fabuttonClickListener.onGenreFabClick();
+            }
+        });
+
         return v;
     }
 
@@ -141,6 +154,10 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
 
     public  interface GenreListFragmentInteractionListener{
         void onGenreSelected(String genreName, String genreId);
+    }
+
+    public interface GenreFabuttonClickListener{
+        void onGenreFabClick();
     }
 
 
@@ -227,12 +244,6 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         switch (action) {
             case GenreAdapter.ACTION_EDIT:
                 shouldReloadOnResume = true;
-                //Toast.makeText(GenreActivity.this, g.getName() + " Edit", Toast.LENGTH_SHORT).show();
-                /*Intent intent = new Intent(GenreActivity.this, EditGenreActivity.class);
-                intent.putExtra("genre_name", g.getName());
-                intent.putExtra("genre_id", g.getId());
-                startActivity(intent);*/
-              //  Toast.makeText(getActivity(), "Edit clicked .", Toast.LENGTH_SHORT).show();
                 listener.onGenreSelected(g.getName(),g.getId());
                 break;
 
