@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,8 +44,11 @@ import retrofit2.Response;
 public class AuthorListFragment extends Fragment implements ListItemClickListener {
 
     private AuthorListFragmentInteractionListener listener;
+    private AuthorFabButtonClickListener authorFabButtonClickListener;
 
     private RecyclerView recyclerView;
+    FloatingActionButton fabAddAuthor;
+
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
     private boolean shouldReloadOnResume = false;
@@ -88,19 +93,20 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
     public AuthorListFragment() {
         // Required empty public constructor
     }
-/*
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof GenreListFragment.GenreListFragmentInteractionListener){
+        if(context instanceof AuthorListFragmentInteractionListener && context instanceof AuthorFabButtonClickListener){
+
             listener= (AuthorListFragmentInteractionListener) context;
+            authorFabButtonClickListener = (AuthorFabButtonClickListener) context;
+
         } else{
-            throw new RuntimeException(context.getClass().getSimpleName()+" must implement AuthorListFragment.AuthorListFragmentInteractionListener");
+            throw new RuntimeException(context.getClass().getSimpleName()+" must implement AuthorListFragment.AuthorListFragmentInteractionListener and AuthorFabButtonClickListener both.");
         }
     }
-*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,7 +121,7 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
         mProgressDialog.setCancelable(false);
 
         authors = new ArrayList<>();
-        adapter=new AuthorAdapter(authors, this);
+        adapter = new AuthorAdapter(authors, this);
 
         loadAuthors();
     }
@@ -124,7 +130,7 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_author_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_author_list, container, false);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.author_recycler_view);
 
@@ -132,6 +138,15 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
+
+        fabAddAuthor = (FloatingActionButton) v.findViewById(R.id.fab_add_author);
+        fabAddAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shouldReloadOnResume = true;
+                authorFabButtonClickListener.onAuthorFabClick();
+            }
+        });
 
         return v;
     }
@@ -145,15 +160,46 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
         filter.addAction(ACTION_AUTHOR_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
 
-        /*if (shouldReloadOnResume) {
+        if (shouldReloadOnResume) {
             loadAuthors();
         }
-        shouldReloadOnResume = false;*/
+        shouldReloadOnResume = false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        broadcastManager.unregisterReceiver(broadcastReceiver);
     }
 
     @Override
     public void onAction(int position, int action) {
+        Author author = authors.get(position);
 
+        switch (action) {
+
+            case AuthorAdapter.ACTION_EDIT:
+                shouldReloadOnResume = true;
+                listener.onAuthorSelected(author.getName(), author.getId(), author.getLanguage(),
+                        author.getCountry());
+                break;
+
+            case AuthorAdapter.ACTION_DELETE:
+                Call<ResponseBody> call = authorService.deleteAuthorEntry(author.getId());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        //  Toast.makeText(AuthorActivity.this, "Sucessfully deleted entry",Toast.LENGTH_SHORT).show();
+                        loadAuthors();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        // Log.e(TAG, t.toString());
+                    }
+                });
+                break;
+        }
     }
 
     private void loadAuthors() {
@@ -172,7 +218,7 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
 
             @Override
             public void onFailure(Call<List<Author>> call, Throwable t) {
-              //  Log.e(TAG, t.toString());
+                //  Log.e(TAG, t.toString());
                 Intent intent = new Intent(ACTION_AUTHOR_LIST_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
             }
@@ -199,7 +245,11 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
             hideLoading();
     }
 
-    private interface AuthorListFragmentInteractionListener{
-        void onAuthorSelected();
+    public interface AuthorListFragmentInteractionListener {
+        void onAuthorSelected(String authName, String authId, String authLanguage, String authCountry);
+    }
+
+    public interface AuthorFabButtonClickListener{
+        public void onAuthorFabClick();
     }
 }

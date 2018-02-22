@@ -41,7 +41,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenreListFragment extends Fragment implements ListItemClickListener{
+public class GenreListFragment extends Fragment implements ListItemClickListener {
 
     private GenreListFragmentInteractionListener listener;
     private GenreFabuttonClickListener fabuttonClickListener;
@@ -68,12 +68,12 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            switch (intent.getAction()){
+            switch (intent.getAction()) {
 
                 //action taken on sucessful genre list loading
                 case ACTION_GENRE_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
-                    genres= Arrays.asList((Genre[])intent.getParcelableArrayExtra(KEY_GENRES));
+                    genres = Arrays.asList((Genre[]) intent.getParcelableArrayExtra(KEY_GENRES));
                     adapter.setGenreList(genres);
                     isGenreLoaded = true;
                     postLoad();
@@ -99,11 +99,11 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof GenreListFragmentInteractionListener && context instanceof GenreFabuttonClickListener){
+        if (context instanceof GenreListFragmentInteractionListener && context instanceof GenreFabuttonClickListener) {
             fabuttonClickListener = (GenreFabuttonClickListener) context;
-            listener= (GenreListFragmentInteractionListener) context;
-        } else{
-            throw new RuntimeException(context.getClass().getSimpleName()+" must implement GenreList.GenreListFragmentInteractionListener and GenreList.GenreFabuttonClickListener both");
+            listener = (GenreListFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.getClass().getSimpleName() + " must implement GenreList.GenreListFragmentInteractionListener and GenreList.GenreFabuttonClickListener both");
         }
     }
 
@@ -120,7 +120,7 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         mProgressDialog.setCancelable(false);
 
         genres = new ArrayList<>();
-        adapter=new GenreAdapter(genres, this);
+        adapter = new GenreAdapter(genres, this);
 
         loadGenres();
 
@@ -151,32 +151,31 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
     }
 
 
-
-    public  interface GenreListFragmentInteractionListener{
+    public interface GenreListFragmentInteractionListener {
         void onGenreSelected(String genreName, String genreId);
     }
 
-    public interface GenreFabuttonClickListener{
+    public interface GenreFabuttonClickListener {
         void onGenreFabClick();
     }
 
 
-   @Override
-   public void onResume() {
-       super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-       //register broadcastreceiver  with Actions
-       IntentFilter filter = new IntentFilter();
-       filter.addAction(ACTION_GENRE_LIST_API_SUCCESS);
-       filter.addAction(ACTION_GENRE_LIST_API_FAILURE);
-       broadcastManager.registerReceiver(broadcastReceiver, filter);
+        //register broadcastreceiver  with Actions
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_GENRE_LIST_API_SUCCESS);
+        filter.addAction(ACTION_GENRE_LIST_API_FAILURE);
+        broadcastManager.registerReceiver(broadcastReceiver, filter);
 
-       if(shouldReloadOnResume){
-           loadGenres();
-       }
+        if (shouldReloadOnResume) {
+            loadGenres();
+        }
 
-       shouldReloadOnResume=false;
-   }
+        shouldReloadOnResume = false;
+    }
 
     @Override
     public void onPause() {
@@ -187,7 +186,7 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
     }
 
 
-    private void loadGenres(){
+    private void loadGenres() {
 
         isGenreLoaded = false;
         showLoading();
@@ -196,7 +195,7 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         call.enqueue(new Callback<List<Genre>>() {
             @Override
             public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
-                if(response.isSuccessful()) { //if(response.code()>=200 && response.code()<300)
+                if (response.isSuccessful()) { //if(response.code()>=200 && response.code()<300)
                     Intent intent = new Intent(ACTION_GENRE_LIST_API_SUCCESS);
                     intent.putExtra(KEY_GENRES, response.body().toArray(new Genre[0]));
                     broadcastManager.sendBroadcast(intent);
@@ -211,20 +210,20 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
 
             @Override
             public void onFailure(Call<List<Genre>> call, Throwable t) {
-               // Log.e(TAG, t.toString());
+                // Log.e(TAG, t.toString());
                 Intent intent = new Intent(ACTION_GENRE_LIST_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
             }
         });
     }
 
-   private void showLoading() {
-       adapter.setLoading(true);
-       if (mProgressDialog.isShowing())
-           return;
-       mProgressDialog.setMessage("Loading.......");
-       mProgressDialog.show();
-   }
+    private void showLoading() {
+        adapter.setLoading(true);
+        if (mProgressDialog.isShowing())
+            return;
+        mProgressDialog.setMessage("Loading.......");
+        mProgressDialog.show();
+    }
 
     private void hideLoading() {
         adapter.setLoading(false);
@@ -244,7 +243,7 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
         switch (action) {
             case GenreAdapter.ACTION_EDIT:
                 shouldReloadOnResume = true;
-                listener.onGenreSelected(g.getName(),g.getId());
+                listener.onGenreSelected(g.getName(), g.getId());
                 break;
 
             case GenreAdapter.ACTION_DELETE:
@@ -259,7 +258,7 @@ public class GenreListFragment extends Fragment implements ListItemClickListener
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                     //    Log.e(TAG, t.toString());
+                        //    Log.e(TAG, t.toString());
                     }
                 });
                 break;

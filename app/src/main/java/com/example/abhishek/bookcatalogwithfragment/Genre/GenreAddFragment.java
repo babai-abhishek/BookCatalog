@@ -45,11 +45,19 @@ public class GenreAddFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
         inflater.inflate(R.menu.genre_add_fragment,menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.add_genre:
+                addNewGenre();
+                return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
