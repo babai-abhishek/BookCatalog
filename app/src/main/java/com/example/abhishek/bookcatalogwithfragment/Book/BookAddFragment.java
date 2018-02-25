@@ -1,12 +1,15 @@
 package com.example.abhishek.bookcatalogwithfragment.Book;
 
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,7 +69,7 @@ public class BookAddFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.add_book:
                 addNewBook();
                 return true;
@@ -123,18 +126,24 @@ public class BookAddFragment extends Fragment {
             public void onClick(View v) {
                 // show the authors in a list and select from there
                 FragmentManager manager = getChildFragmentManager();
+
+                FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectAuthor");
+
                 final SelectAuthorListFragment fragment = new SelectAuthorListFragment();
 
-                fragment.show(manager, "xyz");
+                fragment.setTargetFragment(BookAddFragment.this, SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR);
 
-                fragment.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if(fragment.selectedAuthor!=null){
+                fragment.show(transaction, "xyz");
 
-                        }
-                    }
-                });
+
+//                fragment.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        if(fragment.selectedAuthor!=null){
+//
+//                        }
+//                    }
+//                });
 
             }
         });
@@ -209,4 +218,19 @@ public class BookAddFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode!= Activity.RESULT_OK)
+            return;
+
+        switch (requestCode) {
+            case SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
+                selectedAuthor = (Author) data.getParcelableExtra("author");
+                setAuthor();
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

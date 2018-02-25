@@ -1,6 +1,8 @@
 package com.example.abhishek.bookcatalogwithfragment.Book;
 
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -15,6 +18,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +43,8 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class SelectAuthorListFragment extends DialogFragment {
+    public static final int REQUEST_CODE_SELECT_AUTHOR = 0;
+
 
     RecyclerView rvSelectAuthor;
     List<Author> authors = new ArrayList<>();
@@ -110,6 +116,12 @@ public class SelectAuthorListFragment extends DialogFragment {
             @Override
             public void onSelectAuthor(Author author) {
                 selectedAuthor = author;
+
+                Intent i = new Intent();
+                i.putExtra("author",author);
+
+                getTargetFragment().onActivityResult(REQUEST_CODE_SELECT_AUTHOR, Activity.RESULT_OK, i);
+
                 dismiss();
             }
         });
@@ -124,6 +136,27 @@ public class SelectAuthorListFragment extends DialogFragment {
 
         return v;
     }
+
+//    @NonNull
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Dialog dialog = super.onCreateDialog(savedInstanceState);
+//
+//        // Add back button listener
+//        dialog.setOnKeyListener(new Dialog.OnKeyListener() {
+//            @Override
+//            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+//                // getAction to make sure this doesn't double fire
+//                if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
+//                    // Your code here
+//                    dismiss();
+//                    return true; // Capture onKey
+//                }
+//                return false; // Don't capture
+//            }
+//        });
+//
+//        return dialog;
+//    }
 
     @Override
     public void onResume() {
@@ -189,5 +222,4 @@ public class SelectAuthorListFragment extends DialogFragment {
         if (isAuthorLoaded)
             hideLoading();
     }
-
 }
