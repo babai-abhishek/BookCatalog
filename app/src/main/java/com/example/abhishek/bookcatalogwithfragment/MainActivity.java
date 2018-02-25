@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
+import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
@@ -21,11 +22,13 @@ public class MainActivity extends AppCompatActivity implements
         GenreListFragment.GenreListFragmentInteractionListener,
         GenreListFragment.GenreFabuttonClickListener,
         AuthorListFragment.AuthorListFragmentInteractionListener,
-        AuthorListFragment.AuthorFabButtonClickListener{
+        AuthorListFragment.AuthorFabButtonClickListener,
+        BookListFragment.BookFabButtonClickListener{
 
     private static final String TAG_FRAGMENT_OPTIONS="OptionsFragment";
 
     private static final String TAG_FRAGMENT_BOOK_LIST="BookListFragment";
+    private static final String TAG_FRAGMENT_BOOK_ADD = "BookAddFragment";
 
     private static final String TAG_FRAGMENT_GENRE_LIST="GenreListFragment";
     private static final String TAG_FRAGMENT_GENRE_EDIT ="GenreEditFragment";
@@ -35,15 +38,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG_FRAGMENT_AUTHOR_EDIT ="AuthorEditFragment";
     private static final String TAG_FRAGMENT_AUTHOR_ADD ="AuthorAddFragment";
 
-
-
-    /*private static String KEY_RESTORE_GENRE_LIST_FRAGMENT = "restoreGenreFragment";
-    private static boolean restoreGenreFragment = false;*/
-   // Button btnToggle;
     private FrameLayout flFragmentContainer;
     private FragmentManager manager;
-    OptionsFragment optionsFragment ;
-    GenreListFragment genreListFragment ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +128,15 @@ public class MainActivity extends AppCompatActivity implements
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, new AuthorAddFragment(), TAG_FRAGMENT_AUTHOR_ADD)
                 .addToBackStack(TAG_FRAGMENT_AUTHOR_ADD)
+                .commit();
+
+    }
+
+    @Override
+    public void onBookFabClick() {
+        manager.beginTransaction()
+                .replace(R.id.flFragmentContainer, new BookAddFragment(), TAG_FRAGMENT_BOOK_ADD)
+                .addToBackStack(TAG_FRAGMENT_BOOK_ADD)
                 .commit();
 
     }

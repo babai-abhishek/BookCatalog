@@ -43,6 +43,8 @@ public class BookListFragment extends Fragment {
     private RecyclerView recyclerView;
     FloatingActionButton fabAddBook;
 
+    BookFabButtonClickListener bookFabButtonClickListener;
+
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
     private boolean shouldReloadOnResume = false;
@@ -79,6 +81,19 @@ public class BookListFragment extends Fragment {
 
     public BookListFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if(context instanceof BookFabButtonClickListener){
+            bookFabButtonClickListener = (BookFabButtonClickListener) context;
+        }
+        else {
+            throw new RuntimeException(context.getClass().getSimpleName()+" must implement BookListFragment.BookFabButtonClickListener.");
+
+        }
     }
 
     @Override
@@ -119,7 +134,7 @@ public class BookListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReloadOnResume = true;
-
+                bookFabButtonClickListener.onBookFabClick();
             }
         });
 
@@ -189,6 +204,10 @@ public class BookListFragment extends Fragment {
     private void postLoad() {
         if (isBookLoaded)
             hideLoading();
+    }
+
+    public interface BookFabButtonClickListener{
+        void onBookFabClick();
     }
 
 }
