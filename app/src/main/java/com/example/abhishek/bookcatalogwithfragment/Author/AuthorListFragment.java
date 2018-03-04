@@ -60,6 +60,9 @@ public class AuthorListFragment extends Fragment implements ListItemClickListene
     private static final String KEY_SHOULD_RELOAD_ON_RESUME = "shouldLoadOnResume";
     public static final String KEY_IS_AUTHOR_LOADED = "isAuthorLoaded";
 
+//    public static final int REQUEST_CODE_ADD_AUTHOR = 0;
+
+
     AuthorInterface authorService = ApiClient.getClient().create(AuthorInterface.class);
     private boolean isAuthorLoaded = false;
 

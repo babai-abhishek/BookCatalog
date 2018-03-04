@@ -50,6 +50,7 @@ public class BookAddFragment extends Fragment {
     Genre selectedGenre = new Genre();
     Author selectedAuthor = new Author();
     TextView tvGenreType, tvAuthorName;
+    public static final int REQUEST_CODE_ADD_AUTHOR = 0;
 
     public BookAddFragment() {
         // Required empty public constructor
@@ -135,7 +136,6 @@ public class BookAddFragment extends Fragment {
 
                 fragment.show(transaction, "xyz");
 
-
 //                fragment.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
 //                    @Override
 //                    public void onDismiss(DialogInterface dialog) {
@@ -211,9 +211,11 @@ public class BookAddFragment extends Fragment {
     }
 
     private void setAuthor() {
+
         if (selectedAuthor.getName() == null) {
             tvAuthorName.setText("Click to select author");
         } else {
+           // Log.d("#",selectedAuthor.getName());
             tvAuthorName.setText("Selected Author : " + selectedAuthor.getName());
         }
     }
@@ -229,6 +231,7 @@ public class BookAddFragment extends Fragment {
                 selectedAuthor = (Author) data.getParcelableExtra("author");
                 setAuthor();
                 break;
+
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }

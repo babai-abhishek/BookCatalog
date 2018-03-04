@@ -12,8 +12,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.AuthorAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.SelectAuthorAdapter;
+import com.example.abhishek.bookcatalogwithfragment.Author.AuthorAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
@@ -43,13 +47,16 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class SelectAuthorListFragment extends DialogFragment {
-    public static final int REQUEST_CODE_SELECT_AUTHOR = 0;
+    public static final int REQUEST_CODE_SELECT_AUTHOR = 1;
 
+    private static final String TAG_FRAGMENT_AUTHOR_ADD = "AuthorAddFragment";
 
     RecyclerView rvSelectAuthor;
     List<Author> authors = new ArrayList<>();
     SelectAuthorAdapter adapter;
     public Author selectedAuthor;
+
+    private boolean shouldReloadOnResume = false;
 
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
@@ -89,7 +96,6 @@ public class SelectAuthorListFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,12 +123,7 @@ public class SelectAuthorListFragment extends DialogFragment {
             public void onSelectAuthor(Author author) {
                 selectedAuthor = author;
 
-                Intent i = new Intent();
-                i.putExtra("author",author);
-
-                getTargetFragment().onActivityResult(REQUEST_CODE_SELECT_AUTHOR, Activity.RESULT_OK, i);
-
-                dismiss();
+                dispatchSelectedAuthor();
             }
         });
         rvSelectAuthor = (RecyclerView) v.findViewById(R.id.rv_select_author);
@@ -134,7 +135,51 @@ public class SelectAuthorListFragment extends DialogFragment {
 
         loadAuthors();
 
+        FloatingActionButton fabAddAuthor = (FloatingActionButton) v.findViewById(R.id.fab_add_author);
+        fabAddAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager manager = getChildFragmentManager();
+
+                FragmentTransaction transaction = manager.beginTransaction().addToBackStack(TAG_FRAGMENT_AUTHOR_ADD);
+
+                final AuthorAddFragment fragment = new AuthorAddFragment();
+
+                fragment.setTargetFragment(SelectAuthorListFragment.this, BookAddFragment.REQUEST_CODE_ADD_AUTHOR);
+
+                fragment.show(transaction, TAG_FRAGMENT_AUTHOR_ADD);
+
+            }
+        });
+
         return v;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode!= Activity.RESULT_OK)
+            return;
+        switch (requestCode) {
+            case BookAddFragment.REQUEST_CODE_ADD_AUTHOR:
+                selectedAuthor = (Author) data.getParcelableExtra("author");
+                dispatchSelectedAuthor();
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void dispatchSelectedAuthor() {
+        Intent i = new Intent();
+        i.putExtra("author", selectedAuthor);
+
+        getTargetFragment().onActivityResult(REQUEST_CODE_SELECT_AUTHOR, Activity.RESULT_OK, i);
+
+        dismiss();
     }
 
 //    @NonNull
@@ -166,8 +211,7 @@ public class SelectAuthorListFragment extends DialogFragment {
         filter.addAction(ACTION_AUTHOR_LIST_API_SUCCESS);
         filter.addAction(ACTION_AUTHOR_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
-/*
-        if (shouldReloadOnResume) {
+       /* if (shouldReloadOnResume) {
             loadAuthors();
         }
         shouldReloadOnResume = false;*/
@@ -178,7 +222,6 @@ public class SelectAuthorListFragment extends DialogFragment {
         super.onPause();
         broadcastManager.unregisterReceiver(broadcastReceiver);
     }
-
 
     private void loadAuthors() {
 
@@ -205,7 +248,7 @@ public class SelectAuthorListFragment extends DialogFragment {
     }
 
     private void showLoading() {
-       // adapter.setLoading(true);
+        // adapter.setLoading(true);
         if (mProgressDialog.isShowing())
             return;
         mProgressDialog.setMessage("Loading.......");
@@ -222,4 +265,5 @@ public class SelectAuthorListFragment extends DialogFragment {
         if (isAuthorLoaded)
             hideLoading();
     }
+
 }

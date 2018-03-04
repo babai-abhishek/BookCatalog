@@ -1,9 +1,15 @@
 package com.example.abhishek.bookcatalogwithfragment.Author;
 
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,9 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
+import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
+import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
@@ -26,10 +36,11 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AuthorAddFragment extends Fragment {
+public class AuthorAddFragment extends DialogFragment {
 
     EditText et_new_auth_name, et_new_auth_language, et_new_auth_country;
-
+    Button btnSaveNewAuthor;
+    boolean shownAsDialog = false;
     AuthorInterface authorService = ApiClient.getClient().create(AuthorInterface.class);
 
     public AuthorAddFragment() {
@@ -40,10 +51,10 @@ public class AuthorAddFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
+       // setHasOptionsMenu(true);
     }
 
-    @Override
+   /* @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.author_add_fragment,menu);
@@ -60,7 +71,7 @@ public class AuthorAddFragment extends Fragment {
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,9 +83,35 @@ public class AuthorAddFragment extends Fragment {
         et_new_auth_language = (EditText) v.findViewById(R.id.et_add_new_author_language);
         et_new_auth_country = (EditText) v.findViewById(R.id.et_add_new_author_country);
 
+        btnSaveNewAuthor = (Button) v.findViewById(R.id.btn_save_new_author);
+        btnSaveNewAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewAuthor();
+            }
+        });
+
         return v;
     }
 
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog d = super.onCreateDialog(savedInstanceState);
+        d.setCanceledOnTouchOutside(false);
+        return d;
+    }
+
+    @Override
+    public int show(FragmentTransaction transaction, String tag) {
+
+        int ret = super.show(transaction, tag);
+
+        shownAsDialog = true;
+
+        return ret;
+    }
 
     private void addNewAuthor() {
 
@@ -88,7 +125,17 @@ public class AuthorAddFragment extends Fragment {
                 Author author = response.body();
                 //Log.d("#"," id of new book received "+ author.getId());
                 Toast.makeText(getActivity(), "ID of new author is"+author.getId(), Toast.LENGTH_SHORT).show();
-                getActivity().onBackPressed();
+               // getActivity().onBackPressed();
+                if(!shownAsDialog){
+                    getActivity().onBackPressed();
+                }
+                else {
+                    Intent i = new Intent();
+                    i.putExtra("author", author);
+                    getTargetFragment().onActivityResult(BookAddFragment.REQUEST_CODE_ADD_AUTHOR, Activity.RESULT_OK, i);
+                    dismiss();
+                }
+
             }
 
             @Override
