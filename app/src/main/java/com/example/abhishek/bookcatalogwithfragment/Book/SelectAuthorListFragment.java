@@ -170,7 +170,6 @@ public class SelectAuthorListFragment extends DialogFragment {
                 super.onActivityResult(requestCode, resultCode, data);
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void dispatchSelectedAuthor() {

@@ -5,12 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="10dp"
+    android:minWidth="200dp"
     tools:context="com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment">
 
     <EditText
-        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/et_add_new_genre"/>
-
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Save"
+        android:id="@+id/btn_save_new_genre"
+        />
 </LinearLayout>

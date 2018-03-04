@@ -51,6 +51,8 @@ public class BookAddFragment extends Fragment {
     Author selectedAuthor = new Author();
     TextView tvGenreType, tvAuthorName;
     public static final int REQUEST_CODE_ADD_AUTHOR = 0;
+    public static final int REQUEST_CODE_ADD_GENRE= 3;
+
 
     public BookAddFragment() {
         // Required empty public constructor
@@ -134,7 +136,7 @@ public class BookAddFragment extends Fragment {
 
                 fragment.setTargetFragment(BookAddFragment.this, SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR);
 
-                fragment.show(transaction, "xyz");
+                fragment.show(transaction, "SelectAuthor");
 
 //                fragment.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
 //                    @Override
@@ -152,6 +154,16 @@ public class BookAddFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // show the genres in a list and select from there
+                FragmentManager manager = getChildFragmentManager();
+
+                FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectGenre");
+
+                final SelectGenreListFragment fragment = new SelectGenreListFragment();
+
+                fragment.setTargetFragment(BookAddFragment.this, SelectGenreListFragment.REQUEST_CODE_SELECT_GENRE);
+
+                fragment.show(transaction, "SelectGenre");
+
             }
         });
 
@@ -230,6 +242,11 @@ public class BookAddFragment extends Fragment {
             case SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
                 selectedAuthor = (Author) data.getParcelableExtra("author");
                 setAuthor();
+                break;
+
+            case SelectGenreListFragment.REQUEST_CODE_SELECT_GENRE:
+                selectedGenre = data.getParcelableExtra("genre");
+                setGenre();
                 break;
 
             default:
