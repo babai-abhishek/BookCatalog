@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.AuthorAdapter;
@@ -42,6 +43,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
     private RecyclerView recyclerView;
     FloatingActionButton fabAddBook;
+    TextView tvHeader;
 
     BookFabButtonClickListener bookFabButtonClickListener;
     BookListFragmentInteractionListener listener;
@@ -54,6 +56,12 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     private static final String ACTION_BOOK_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.books.all.result.success";
     private static final String ACTION_BOOK_LIST_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.books.all.result.failure";
     private static final String KEY_BOOK = "books";
+
+    private static final String ARGS_GENRE_ID = "genreId";
+    private static final String ARGS_AUTHOR_ID = "authorId";
+
+    String listType = null, filterId = null;
+
 
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
     private List<Book> bookList;
@@ -80,6 +88,26 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         }
     };
 
+    public static BookListFragment newInstanceForGenre(String genreId) {
+
+        BookListFragment fragment = new BookListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARGS_GENRE_ID, genreId);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    public static BookListFragment newInstanceForAuthor(String authorId) {
+
+        BookListFragment fragment = new BookListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARGS_AUTHOR_ID, authorId);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     public BookListFragment() {
         // Required empty public constructor
     }
@@ -88,12 +116,11 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof BookFabButtonClickListener && context instanceof BookListFragmentInteractionListener){
+        if (context instanceof BookFabButtonClickListener && context instanceof BookListFragmentInteractionListener) {
             bookFabButtonClickListener = (BookFabButtonClickListener) context;
             listener = (BookListFragmentInteractionListener) context;
-        }
-        else {
-            throw new RuntimeException(context.getClass().getSimpleName()+" must implement BookListFragment.BookFabButtonClickListener and BookListFragment.BookListFragmentInteractionListener both.");
+        } else {
+            throw new RuntimeException(context.getClass().getSimpleName() + " must implement BookListFragment.BookFabButtonClickListener and BookListFragment.BookListFragmentInteractionListener both.");
 
         }
     }
@@ -110,9 +137,8 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         mProgressDialog.setCancelable(false);
 
         bookList = new ArrayList<>();
-        bookAdapter = new BookAdapter(bookList,this);
+        bookAdapter = new BookAdapter(bookList, this);
 
-        loadBooks();
     }
 
 
@@ -122,9 +148,11 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_book_list, container, false);
 
+        tvHeader = (TextView) v.findViewById(R.id.tvHeader);
+
         recyclerView = (RecyclerView) v.findViewById(R.id.book_recycler_view);
         bookList = new ArrayList<>();
-        bookAdapter = new BookAdapter(bookList,this);
+        bookAdapter = new BookAdapter(bookList, this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -140,6 +168,25 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
             }
         });
 
+        // check if args are save
+        //if getArgs is null then load all books
+        // else check arg type (genre/ author) and load
+
+        if (getArguments() != null) {
+            tvHeader.setVisibility(View.GONE);
+            if (getArguments().containsKey(ARGS_AUTHOR_ID)) {
+                listType = "author";
+                filterId = getArguments().getString(ARGS_AUTHOR_ID);
+            } else if (getArguments().containsKey(ARGS_GENRE_ID)) {
+                listType = "genre";
+                filterId = getArguments().getString(ARGS_GENRE_ID);
+            }
+        }
+
+        fabAddBook.setVisibility(listType==null?View.VISIBLE:View.GONE);
+
+        loadBooks();
+
         return v;
     }
 
@@ -151,11 +198,10 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         filter.addAction(ACTION_BOOK_LIST_API_SUCCESS);
         filter.addAction(ACTION_BOOK_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
-/*
         if (shouldReloadOnResume) {
             loadBooks();
         }
-        shouldReloadOnResume = false;*/
+        shouldReloadOnResume = false;
     }
 
     @Override
@@ -169,8 +215,21 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
         isBookLoaded = false;
         showLoading();
+        Call<List<Book>> call;
 
-        Call<List<Book>> call = bookService.getAllBooks();
+       /* if("author".equalsIgnoreCase(listType)){
+            call = bookService.getBooksByAuthorId(filterId);
+        } else if("genre".equalsIgnoreCase(listType)){
+            call = bookService.getBooksByGenreId(filterId);
+        }else {
+            call = bookService.getAllBooks();
+        }*/
+
+        call = "author".equalsIgnoreCase(listType)
+                ?  bookService.getBooksByAuthorId(filterId)
+                : "genre".equalsIgnoreCase(listType)
+                ? bookService.getBooksByGenreId(filterId)
+                : bookService.getAllBooks();
         call.enqueue(new Callback<List<Book>>() {
             @Override
             public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
@@ -210,15 +269,16 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
     @Override
     public void onSelectBook(int position) {
+        shouldReloadOnResume = true;
         Book selectedBook = bookList.get(position);
         listener.onBookSelected(selectedBook);
     }
 
-    public interface BookListFragmentInteractionListener{
+    public interface BookListFragmentInteractionListener {
         void onBookSelected(Book book);
     }
 
-    public interface BookFabButtonClickListener{
+    public interface BookFabButtonClickListener {
         void onBookFabClick();
     }
 

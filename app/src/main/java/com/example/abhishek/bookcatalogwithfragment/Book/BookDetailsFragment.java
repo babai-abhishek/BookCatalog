@@ -55,6 +55,9 @@ public class BookDetailsFragment extends Fragment {
     Author author;
     Genre genre;
 
+    GetAllBooksOfParticularGenre getAllBooksOfParticularGenre;
+    GetAllBooksOfParticularAuthor getAllBooksOfParticularAuthor;
+
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
     AuthorInterface authorService = ApiClient.getClient().create(AuthorInterface.class);
     GenreInterface genreService = ApiClient.getClient().create(GenreInterface.class);
@@ -147,6 +150,18 @@ public class BookDetailsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof GetAllBooksOfParticularAuthor && context instanceof GetAllBooksOfParticularGenre){
+            getAllBooksOfParticularAuthor = (GetAllBooksOfParticularAuthor) context;
+            getAllBooksOfParticularGenre = (GetAllBooksOfParticularGenre) context;
+        }else {
+            throw new RuntimeException(context.getClass().getSimpleName() + " must implement BookDetailsFragment.GetAllBooksOfParticularAuthor and BookDetailsFragment.GetAllBooksOfParticularGenre both.");
+        }
+
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -199,7 +214,32 @@ public class BookDetailsFragment extends Fragment {
         loadGenreType(book.getGenreId());
         loadAuthorName(book.getAuthorId());
 
+        tvFindBookByGenre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shouldReload = false;
+                getAllBooksOfParticularGenre.onParticularGenreSelected(genre);
+
+            }
+        });
+
+        tvFindBookByAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shouldReload = false;
+                getAllBooksOfParticularAuthor.onParticularAuthorSelected(author);
+            }
+        });
+
         return v;
+    }
+
+    public interface GetAllBooksOfParticularGenre{
+        void onParticularGenreSelected(Genre genre);
+    }
+
+    public interface GetAllBooksOfParticularAuthor{
+        void onParticularAuthorSelected(Author author);
     }
 
 
@@ -215,10 +255,10 @@ public class BookDetailsFragment extends Fragment {
         filter.addAction(ACTION_RELOAD_BOOK_LIST_API_FAILURE);*/
         broadcastManager.registerReceiver(broadcastReceiver, filter);
 
-      /*  if(shouldReload){
+        if(shouldReload){
             reloadUpdatedBook(book.getId());
         }
-        shouldReload = false;*/
+        shouldReload = false;
     }
 
     @Override
@@ -227,9 +267,7 @@ public class BookDetailsFragment extends Fragment {
         broadcastManager.unregisterReceiver(broadcastReceiver);
     }
 
-
-
-  /*  private void reloadUpdatedBook(String id) {
+    private void reloadUpdatedBook(String id) {
         isBookLoaded = false;
         showLoading();
 
@@ -249,9 +287,9 @@ public class BookDetailsFragment extends Fragment {
                 broadcastManager.sendBroadcast(intent);
             }
         });
-        *//*
-        shouldReload = false;*//*
-    }*/
+
+        shouldReload = false;
+    }
 
     private void loadAuthorName(String authorId) {
 

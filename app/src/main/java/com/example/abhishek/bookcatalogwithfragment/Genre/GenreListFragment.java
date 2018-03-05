@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -47,7 +48,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenreListFragment extends Fragment implements ListItemClickListener {
+public class GenreListFragment extends DialogFragment implements ListItemClickListener {
 
     private GenreListFragmentInteractionListener listener;
     private GenreFabuttonClickListener fabuttonClickListener;
