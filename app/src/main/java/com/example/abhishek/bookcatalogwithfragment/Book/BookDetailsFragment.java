@@ -27,6 +27,7 @@ import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -231,6 +232,25 @@ public class BookDetailsFragment extends Fragment {
             }
         });
 
+        btnDeleteBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<ResponseBody> call = bookService.deleteBookEntry(book.getId());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        // Toast.makeText(BookActivity.this, "Sucessfully deleted entry",Toast.LENGTH_SHORT).show();
+                        getActivity().onBackPressed();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.e("#", t.toString());
+                    }
+                });
+
+            }
+        });
         return v;
     }
 
