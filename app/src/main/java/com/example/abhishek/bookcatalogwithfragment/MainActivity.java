@@ -13,6 +13,7 @@ import com.example.abhishek.bookcatalogwithfragment.Author.AuthorEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookDetailsFragment;
+import com.example.abhishek.bookcatalogwithfragment.Book.BookEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
@@ -30,13 +31,16 @@ public class MainActivity extends AppCompatActivity implements
         BookListFragment.BookFabButtonClickListener,
         BookListFragment.BookListFragmentInteractionListener ,
         BookDetailsFragment.GetAllBooksOfParticularGenre,
-        BookDetailsFragment.GetAllBooksOfParticularAuthor {
+        BookDetailsFragment.GetAllBooksOfParticularAuthor,
+        BookDetailsFragment.BookDetailsEditButtonClickListener {
 
     private static final String TAG_FRAGMENT_OPTIONS="OptionsFragment";
 
     private static final String TAG_FRAGMENT_BOOK_LIST="BookListFragment";
     private static final String TAG_FRAGMENT_BOOK_ADD = "BookAddFragment";
     private static final String TAG_FRAGMENT_BOOK_DETAILS = "BookDetailsFragment";
+    private static final String TAG_FRAGMENT_BOOK_EDIT = "BookEditFragment";
+
 
     private static final String TAG_FRAGMENT_GENRE_LIST="GenreListFragment";
     private static final String TAG_FRAGMENT_GENRE_EDIT ="GenreEditFragment";
@@ -170,6 +174,14 @@ public class MainActivity extends AppCompatActivity implements
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, BookListFragment.newInstanceForAuthor(author.getId()), TAG_FRAGMENT_BOOK_LIST)
                 .addToBackStack(TAG_FRAGMENT_BOOK_LIST)
+                .commit();
+    }
+
+    @Override
+    public void onEditClicked(Book book, Genre genre, Author author) {
+        manager.beginTransaction()
+                .replace(R.id.flFragmentContainer, BookEditFragment.newInstance(book, genre, author), TAG_FRAGMENT_BOOK_EDIT)
+                .addToBackStack(TAG_FRAGMENT_BOOK_EDIT)
                 .commit();
     }
 }

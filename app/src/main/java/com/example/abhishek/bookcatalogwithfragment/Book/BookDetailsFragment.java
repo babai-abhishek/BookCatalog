@@ -58,6 +58,7 @@ public class BookDetailsFragment extends Fragment {
 
     GetAllBooksOfParticularGenre getAllBooksOfParticularGenre;
     GetAllBooksOfParticularAuthor getAllBooksOfParticularAuthor;
+    BookDetailsEditButtonClickListener bookDetailsEditButtonClickListener;
 
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
     AuthorInterface authorService = ApiClient.getClient().create(AuthorInterface.class);
@@ -153,11 +154,12 @@ public class BookDetailsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof GetAllBooksOfParticularAuthor && context instanceof GetAllBooksOfParticularGenre){
+        if(context instanceof GetAllBooksOfParticularAuthor && context instanceof GetAllBooksOfParticularGenre && context instanceof BookDetailsEditButtonClickListener){
             getAllBooksOfParticularAuthor = (GetAllBooksOfParticularAuthor) context;
             getAllBooksOfParticularGenre = (GetAllBooksOfParticularGenre) context;
+            bookDetailsEditButtonClickListener = (BookDetailsEditButtonClickListener) context;
         }else {
-            throw new RuntimeException(context.getClass().getSimpleName() + " must implement BookDetailsFragment.GetAllBooksOfParticularAuthor and BookDetailsFragment.GetAllBooksOfParticularGenre both.");
+            throw new RuntimeException(context.getClass().getSimpleName() + " must implement BookDetailsFragment.GetAllBooksOfParticularAuthor, BookDetailsFragment.BookDetailsEditButtonClickListener and BookDetailsFragment.GetAllBooksOfParticularGenre all.");
         }
 
     }
@@ -251,7 +253,19 @@ public class BookDetailsFragment extends Fragment {
 
             }
         });
+
+        btnEditBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
+            }
+        });
+
         return v;
+    }
+
+    public interface BookDetailsEditButtonClickListener{
+        void onEditClicked(Book book, Genre genre, Author author);
     }
 
     public interface GetAllBooksOfParticularGenre{
