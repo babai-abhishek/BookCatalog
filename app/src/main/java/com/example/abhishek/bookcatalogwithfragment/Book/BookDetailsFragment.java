@@ -115,7 +115,7 @@ public class BookDetailsFragment extends Fragment {
                     isGenreLoaded = true;
                     postLoad();
                     break;
-               /* case ACTION_RELOAD_BOOK_LIST_API_SUCCESS:
+                case ACTION_RELOAD_BOOK_LIST_API_SUCCESS:
                     book = intent.getParcelableExtra(BOOK_KEY_FOR_BROADCASTRECEIVER);
                     tvBookName.setText(book.getName());
                     tvBookId.setText(book.getId());
@@ -130,7 +130,7 @@ public class BookDetailsFragment extends Fragment {
                     Toast.makeText(getActivity(), "Api Failure", Toast.LENGTH_SHORT).show();
                     isBookLoaded = true;
                     postLoad();
-                    break;*/
+                    break;
 
             }
         }
@@ -257,6 +257,7 @@ public class BookDetailsFragment extends Fragment {
         btnEditBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                shouldReload = true;
                 bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
             }
         });
@@ -276,7 +277,6 @@ public class BookDetailsFragment extends Fragment {
         void onParticularAuthorSelected(Author author);
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -285,8 +285,8 @@ public class BookDetailsFragment extends Fragment {
         filter.addAction(ACTION_AUTHOR_NAME_API_FAILURE);
         filter.addAction(ACTION_GENRE_TYPE_API_SUCCESS);
         filter.addAction(ACTION_GENRE_TYPE_API_FAILURE);
-        /*filter.addAction(ACTION_RELOAD_BOOK_LIST_API_SUCCESS);
-        filter.addAction(ACTION_RELOAD_BOOK_LIST_API_FAILURE);*/
+        filter.addAction(ACTION_RELOAD_BOOK_LIST_API_SUCCESS);
+        filter.addAction(ACTION_RELOAD_BOOK_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
 
         if(shouldReload){
