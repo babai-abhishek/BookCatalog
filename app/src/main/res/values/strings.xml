@@ -3,4 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="get_all_books_of_this_genre"><u>Get all books of this Genre?</u></string>
+    <string name="get_all_books_of_this_author"><u>Get all books of this Author?</u></string>
 </resources>

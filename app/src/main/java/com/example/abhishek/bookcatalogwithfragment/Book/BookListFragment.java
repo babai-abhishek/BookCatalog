@@ -38,12 +38,13 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BookListFragment extends Fragment {
+public class BookListFragment extends Fragment implements BookAdapter.SelectBookFromListListener {
 
     private RecyclerView recyclerView;
     FloatingActionButton fabAddBook;
 
     BookFabButtonClickListener bookFabButtonClickListener;
+    BookListFragmentInteractionListener listener;
 
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
@@ -87,11 +88,12 @@ public class BookListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof BookFabButtonClickListener){
+        if(context instanceof BookFabButtonClickListener && context instanceof BookListFragmentInteractionListener){
             bookFabButtonClickListener = (BookFabButtonClickListener) context;
+            listener = (BookListFragmentInteractionListener) context;
         }
         else {
-            throw new RuntimeException(context.getClass().getSimpleName()+" must implement BookListFragment.BookFabButtonClickListener.");
+            throw new RuntimeException(context.getClass().getSimpleName()+" must implement BookListFragment.BookFabButtonClickListener and BookListFragment.BookListFragmentInteractionListener both.");
 
         }
     }
@@ -108,7 +110,7 @@ public class BookListFragment extends Fragment {
         mProgressDialog.setCancelable(false);
 
         bookList = new ArrayList<>();
-        bookAdapter = new BookAdapter(bookList);
+        bookAdapter = new BookAdapter(bookList,this);
 
         loadBooks();
     }
@@ -122,7 +124,7 @@ public class BookListFragment extends Fragment {
 
         recyclerView = (RecyclerView) v.findViewById(R.id.book_recycler_view);
         bookList = new ArrayList<>();
-        bookAdapter = new BookAdapter(bookList);
+        bookAdapter = new BookAdapter(bookList,this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -149,11 +151,11 @@ public class BookListFragment extends Fragment {
         filter.addAction(ACTION_BOOK_LIST_API_SUCCESS);
         filter.addAction(ACTION_BOOK_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
-
+/*
         if (shouldReloadOnResume) {
             loadBooks();
         }
-        shouldReloadOnResume = false;
+        shouldReloadOnResume = false;*/
     }
 
     @Override
@@ -204,6 +206,16 @@ public class BookListFragment extends Fragment {
     private void postLoad() {
         if (isBookLoaded)
             hideLoading();
+    }
+
+    @Override
+    public void onSelectBook(int position) {
+        Book selectedBook = bookList.get(position);
+        listener.onBookSelected(selectedBook);
+    }
+
+    public interface BookListFragmentInteractionListener{
+        void onBookSelected(Book book);
     }
 
     public interface BookFabButtonClickListener{

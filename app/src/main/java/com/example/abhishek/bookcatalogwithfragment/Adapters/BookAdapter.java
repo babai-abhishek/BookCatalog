@@ -21,6 +21,7 @@ import java.util.List;
 public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Book> bookList;
+    private SelectBookFromListListener listener;
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
@@ -35,8 +36,14 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public boolean isLoading() {
         return isLoading;
     }
-    public BookAdapter(List<Book> bookList) {
+
+    public BookAdapter(List<Book> bookList, SelectBookFromListListener listListener) {
         this.bookList = bookList;
+        this.listener = listListener;
+    }
+
+    public interface SelectBookFromListListener{
+         void onSelectBook(int position);
     }
 
     @Override
@@ -82,7 +89,7 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             bookViewHolder.bookListCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    listener.onSelectBook(bookList.indexOf(book));
                 }
             });
         }
