@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
@@ -51,7 +52,6 @@ public class BookAddFragment extends Fragment {
     Author selectedAuthor = new Author();
     TextView tvGenreType, tvAuthorName;
     public static final int REQUEST_CODE_ADD_AUTHOR = 0;
-    public static final int REQUEST_CODE_ADD_GENRE= 3;
 
 
     public BookAddFragment() {
@@ -154,13 +154,23 @@ public class BookAddFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // show the genres in a list and select from there
-                FragmentManager manager = getChildFragmentManager();
+               /* FragmentManager manager = getChildFragmentManager();
 
                 FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectGenre");
 
                 final SelectGenreListFragment fragment = new SelectGenreListFragment();
 
                 fragment.setTargetFragment(BookAddFragment.this, SelectGenreListFragment.REQUEST_CODE_SELECT_GENRE);
+
+                fragment.show(transaction, "SelectGenre");*/
+
+                FragmentManager manager = getChildFragmentManager();
+
+                FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectGenre");
+
+                final GenreListFragment fragment = new GenreListFragment();
+
+                fragment.setTargetFragment(BookAddFragment.this, GenreListFragment.REQUEST_CODE_SELECT_GENRE);
 
                 fragment.show(transaction, "SelectGenre");
 
@@ -244,7 +254,7 @@ public class BookAddFragment extends Fragment {
                 setAuthor();
                 break;
 
-            case SelectGenreListFragment.REQUEST_CODE_SELECT_GENRE:
+            case GenreListFragment.REQUEST_CODE_SELECT_GENRE:
                 selectedGenre = data.getParcelableExtra("genre");
                 setGenre();
                 break;

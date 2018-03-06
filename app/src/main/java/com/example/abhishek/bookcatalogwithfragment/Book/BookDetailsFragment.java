@@ -64,27 +64,26 @@ public class BookDetailsFragment extends Fragment {
     AuthorInterface authorService = ApiClient.getClient().create(AuthorInterface.class);
     GenreInterface genreService = ApiClient.getClient().create(GenreInterface.class);
 
-    private static final String ACTION_AUTHOR_NAME_API_SUCCESS="com.example.abhishek.bookcatalogwithfragment.api.author.name.result.success";
-    private static final String ACTION_AUTHOR_NAME_API_FAILURE="com.example.abhishek.bookcatalogwithfragment.api.author.name.result.failure";
+    private static final String ACTION_AUTHOR_NAME_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.author.name.result.success";
+    private static final String ACTION_AUTHOR_NAME_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.author.name.result.failure";
 
-    private static final String ACTION_GENRE_TYPE_API_SUCCESS="com.example.abhishek.bookcatalogwithfragment.api.genre.type.result.success";
-    private static final String ACTION_GENRE_TYPE_API_FAILURE="com.example.abhishek.bookcatalogwithfragment.api.genre.type.result.failure";
+    private static final String ACTION_GENRE_TYPE_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.genre.type.result.success";
+    private static final String ACTION_GENRE_TYPE_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.genre.type.result.failure";
 
-    private static final String ACTION_RELOAD_BOOK_LIST_API_SUCCESS="com.example.abhishek.bookcatalogwithfragment.api.book.list.result.success";
-    private static final String ACTION_RELOAD_BOOK_LIST_API_FAILURE="com.example.abhishek.bookcatalogwithfragment.api.book.list.result.failure";
+    private static final String ACTION_RELOAD_BOOK_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.book.list.result.success";
+    private static final String ACTION_RELOAD_BOOK_LIST_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.book.list.result.failure";
 
     private LocalBroadcastManager broadcastManager = null;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()){
+            switch (intent.getAction()) {
                 case ACTION_AUTHOR_NAME_API_SUCCESS:
                     author = intent.getParcelableExtra(AUTHOR_KEY_FOR_BROADCASTRECEIVER);
-                    if(author != null){
+                    if (author != null) {
                         tvAuthoName.setText(author.getName());
-                    }
-                    else {
+                    } else {
                         tvAuthoName.setText("Not found ! ");
                     }
                     isAuthorLoaded = true;
@@ -99,10 +98,9 @@ public class BookDetailsFragment extends Fragment {
 
                 case ACTION_GENRE_TYPE_API_SUCCESS:
                     genre = intent.getParcelableExtra(GENRE_KEY_FOR_BROADCASTRECEIVER);
-                    if(genre != null){
+                    if (genre != null) {
                         tvGenreType.setText(genre.getName());
-                    }
-                    else {
+                    } else {
                         tvGenreType.setText("Not found !");
                     }
 
@@ -143,7 +141,7 @@ public class BookDetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static BookDetailsFragment getInstance(Book book){
+    public static BookDetailsFragment getInstance(Book book) {
         BookDetailsFragment fragment = new BookDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARGS_SELECTED_BOOK, book);
@@ -154,11 +152,11 @@ public class BookDetailsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof GetAllBooksOfParticularAuthor && context instanceof GetAllBooksOfParticularGenre && context instanceof BookDetailsEditButtonClickListener){
+        if (context instanceof GetAllBooksOfParticularAuthor && context instanceof GetAllBooksOfParticularGenre && context instanceof BookDetailsEditButtonClickListener) {
             getAllBooksOfParticularAuthor = (GetAllBooksOfParticularAuthor) context;
             getAllBooksOfParticularGenre = (GetAllBooksOfParticularGenre) context;
             bookDetailsEditButtonClickListener = (BookDetailsEditButtonClickListener) context;
-        }else {
+        } else {
             throw new RuntimeException(context.getClass().getSimpleName() + " must implement BookDetailsFragment.GetAllBooksOfParticularAuthor, BookDetailsFragment.BookDetailsEditButtonClickListener and BookDetailsFragment.GetAllBooksOfParticularGenre all.");
         }
 
@@ -170,12 +168,12 @@ public class BookDetailsFragment extends Fragment {
 
         broadcastManager = LocalBroadcastManager.getInstance(getActivity());
 
-        if(savedInstanceState == null){
-            if(getArguments() == null)
+        if (savedInstanceState == null) {
+            if (getArguments() == null)
                 throw new RuntimeException("BookDetailsFragment must have arguments set. Are you calling BookDetailsFragment constructor directly? If so, consider using getInstance()");
             Bundle args = getArguments();
 
-            if(!args.containsKey(ARGS_SELECTED_BOOK))
+            if (!args.containsKey(ARGS_SELECTED_BOOK))
                 throw new RuntimeException("BookDetailsFragment has arguments set, but arguments does not contain any selectedBook");
             book = args.getParcelable(ARGS_SELECTED_BOOK);
         }
@@ -186,7 +184,7 @@ public class BookDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_book_details, container, false);
+        View v = inflater.inflate(R.layout.fragment_book_details, container, false);
 
         tvBookName = (TextView) v.findViewById(R.id.tv_book_name);
         tvBookId = (TextView) v.findViewById(R.id.tv_book_id);
@@ -221,7 +219,7 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReload = false;
-                if(genre!=null)
+                if (genre != null)
                     getAllBooksOfParticularGenre.onParticularGenreSelected(genre);
 
             }
@@ -231,7 +229,7 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReload = false;
-                if(author!=null)
+                if (author != null)
                     getAllBooksOfParticularAuthor.onParticularAuthorSelected(author);
             }
         });
@@ -260,22 +258,25 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReload = true;
-                bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
+                if (genre == null) {
+                    bookDetailsEditButtonClickListener.onEditClicked(book, new Genre(), author);
+                } else
+                    bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
             }
         });
 
         return v;
     }
 
-    public interface BookDetailsEditButtonClickListener{
+    public interface BookDetailsEditButtonClickListener {
         void onEditClicked(Book book, Genre genre, Author author);
     }
 
-    public interface GetAllBooksOfParticularGenre{
+    public interface GetAllBooksOfParticularGenre {
         void onParticularGenreSelected(Genre genre);
     }
 
-    public interface GetAllBooksOfParticularAuthor{
+    public interface GetAllBooksOfParticularAuthor {
         void onParticularAuthorSelected(Author author);
     }
 
@@ -291,7 +292,7 @@ public class BookDetailsFragment extends Fragment {
         filter.addAction(ACTION_RELOAD_BOOK_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
 
-        if(shouldReload){
+        if (shouldReload) {
             reloadUpdatedBook(book.getId());
         }
         shouldReload = false;
@@ -313,7 +314,7 @@ public class BookDetailsFragment extends Fragment {
             public void onResponse(Call<Book> call, Response<Book> response) {
                 Book b = response.body();
                 Intent intent = new Intent(ACTION_RELOAD_BOOK_LIST_API_SUCCESS);
-                intent.putExtra(BOOK_KEY_FOR_BROADCASTRECEIVER,b);
+                intent.putExtra(BOOK_KEY_FOR_BROADCASTRECEIVER, b);
                 broadcastManager.sendBroadcast(intent);
             }
 
@@ -329,7 +330,7 @@ public class BookDetailsFragment extends Fragment {
 
     private void loadAuthorName(String authorId) {
 
-        isAuthorLoaded=false;
+        isAuthorLoaded = false;
         showLoading();
 
         Call<Author> call = authorService.getAuthor(authorId);
@@ -338,7 +339,7 @@ public class BookDetailsFragment extends Fragment {
             public void onResponse(Call<Author> call, Response<Author> response) {
                 Author auth = response.body();
                 Intent intent = new Intent(ACTION_AUTHOR_NAME_API_SUCCESS);
-                intent.putExtra(AUTHOR_KEY_FOR_BROADCASTRECEIVER,auth);
+                intent.putExtra(AUTHOR_KEY_FOR_BROADCASTRECEIVER, auth);
                 broadcastManager.sendBroadcast(intent);
             }
 
@@ -354,7 +355,7 @@ public class BookDetailsFragment extends Fragment {
 
     private void loadGenreType(String genreId) {
 
-        isGenreLoaded=false;
+        isGenreLoaded = false;
         showLoading();
 
         Call<Genre> call = genreService.getGenre(genreId);
@@ -363,7 +364,7 @@ public class BookDetailsFragment extends Fragment {
             public void onResponse(Call<Genre> call, Response<Genre> response) {
                 Genre gen = response.body();
                 Intent intent = new Intent(ACTION_GENRE_TYPE_API_SUCCESS);
-                intent.putExtra(GENRE_KEY_FOR_BROADCASTRECEIVER,gen);
+                intent.putExtra(GENRE_KEY_FOR_BROADCASTRECEIVER, gen);
                 broadcastManager.sendBroadcast(intent);
             }
 

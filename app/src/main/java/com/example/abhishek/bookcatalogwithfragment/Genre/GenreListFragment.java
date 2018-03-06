@@ -48,12 +48,16 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenreListFragment extends DialogFragment implements ListItemClickListener {
+public class GenreListFragment extends DialogFragment implements ListItemClickListener,GenreAdapter.SelectFromDialog {
 
     private GenreListFragmentInteractionListener listener;
     private GenreFabuttonClickListener fabuttonClickListener;
+    private Genre selectedGenre;
+    boolean shownAsDialog = false;
+    private static final String TAG_FRAGMENT_GENRE_ADD ="GenreAddFragment";
 
     public static final int REQUEST_CODE_ADD_GENRE = 0;
+    public static final int REQUEST_CODE_SELECT_GENRE = 2;
 
     private static final String ACTION_GENRE_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.genres.all.result.success";
     private static final String ACTION_GENRE_LIST_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.genres.all.result.failure";
@@ -83,7 +87,11 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
                 case ACTION_GENRE_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
                     genres = Arrays.asList((Genre[]) intent.getParcelableArrayExtra(KEY_GENRES));
-                    adapter.setGenreList(genres);
+                    if(!shownAsDialog){
+                        adapter.setGenreList(genres);
+                    }else {
+                        adapter.setGenreListForDialog(genres);
+                    }
                     isGenreLoaded = true;
                     postLoad();
                     break;
@@ -129,7 +137,11 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
         mProgressDialog.setCancelable(false);
 
         genres = new ArrayList<>();
-        adapter = new GenreAdapter(genres, this);
+        if(shownAsDialog){
+            adapter = new GenreAdapter(genres, (GenreAdapter.SelectFromDialog) this);
+        }else {
+            adapter = new GenreAdapter(genres, (ListItemClickListener) this);
+        }
 
         loadGenres();
 
@@ -151,27 +163,43 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
         fabAddGenre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shouldReloadOnResume = true;
-                fabuttonClickListener.onGenreFabClick();
+                if(!shownAsDialog){
+                    shouldReloadOnResume = true;
+                    fabuttonClickListener.onGenreFabClick();
+                }else {
+                    FragmentManager manager = getChildFragmentManager();
+
+                    FragmentTransaction transaction = manager.beginTransaction().addToBackStack(TAG_FRAGMENT_GENRE_ADD);
+
+                    final GenreAddFragment fragment = new GenreAddFragment();
+
+                    fragment.setTargetFragment(GenreListFragment.this, REQUEST_CODE_ADD_GENRE);
+
+                    fragment.show(transaction, TAG_FRAGMENT_GENRE_ADD);
+                }
+
             }
         });
-
-      /*  fabAddGenre.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                FragmentManager manager = getChildFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction().addToBackStack(TAG_FRAGMENT_GENRE_ADD);
-                final GenreAddFragment fragment = new GenreAddFragment();
-                fragment.setTargetFragment(GenreListFragment.this, REQUEST_CODE_ADD_GENRE);
-                fragment.show(transaction, TAG_FRAGMENT_GENRE_ADD);
-
-            }
-        });*/
 
         return v;
     }
 
+
+    @Override
+    public int show(FragmentTransaction transaction, String tag) {
+        int ret = super.show(transaction, tag);
+
+        shownAsDialog = true;
+
+        return ret;
+    }
+
+    @Override
+    public void onSelect(Genre genre) {
+        Toast.makeText(getActivity(),"selected genre : "+genre.getName(),Toast.LENGTH_SHORT).show();
+        selectedGenre = genre;
+        dispatchSelectedGenre();
+    }
 
     public interface GenreListFragmentInteractionListener {
         void onGenreSelected(String genreName, String genreId);
@@ -233,7 +261,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
         });
     }
 
-    /*@Override
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if(resultCode!= Activity.RESULT_OK)
@@ -241,12 +269,20 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
 
         switch (requestCode) {
             case REQUEST_CODE_ADD_GENRE:
-                loadGenres();
+                selectedGenre = (Genre) data.getParcelableExtra("genre");
+                dispatchSelectedGenre();
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
-    }*/
+    }
+
+    private void dispatchSelectedGenre() {
+        Intent i = new Intent();
+        i.putExtra("genre", selectedGenre);
+        getTargetFragment().onActivityResult(REQUEST_CODE_SELECT_GENRE, Activity.RESULT_OK, i);
+        dismiss();
+    }
 
     private void showLoading() {
         adapter.setLoading(true);

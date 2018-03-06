@@ -124,7 +124,7 @@ public class GenreAddFragment extends DialogFragment {
                 else {
                     Intent i = new Intent();
                     i.putExtra("genre", genre);
-                    getTargetFragment().onActivityResult(BookAddFragment.REQUEST_CODE_ADD_GENRE, Activity.RESULT_OK, i);
+                    getTargetFragment().onActivityResult(GenreListFragment.REQUEST_CODE_ADD_GENRE, Activity.RESULT_OK, i);
                     dismiss();
                 }
 

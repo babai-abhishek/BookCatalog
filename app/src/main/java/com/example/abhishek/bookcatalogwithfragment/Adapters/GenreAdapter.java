@@ -1,6 +1,7 @@
 package com.example.abhishek.bookcatalogwithfragment.Adapters;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import java.util.List;
 public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int ACTION_EDIT = 0;
     public static final int ACTION_DELETE = 1;
+    private boolean shownAsDialog = false;
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
@@ -40,10 +42,19 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private ListItemClickListener listItemClickListener;
+    private SelectFromDialog selectFromDialog;
 
     public GenreAdapter(List<Genre> list, ListItemClickListener listItemClickListener) {
         this.genreList = list;
         this.listItemClickListener = listItemClickListener;
+    }
+    public GenreAdapter(List<Genre> list, SelectFromDialog selectFromDialog) {
+        this.genreList = list;
+        this.selectFromDialog = selectFromDialog;
+    }
+
+    public interface SelectFromDialog {
+        void onSelect(Genre genre);
     }
 
     @Override
@@ -90,7 +101,14 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     listItemClickListener.onAction(genreList.indexOf(genre), ACTION_DELETE);
                 }
             });
-
+            if(shownAsDialog){
+                holder.book_list_item_cardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selectFromDialog.onSelect(genre);
+                    }
+                });
+            }
         }
 
     }
@@ -116,18 +134,35 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    public void setGenreListForDialog(List<Genre> genres) {
+        this.genreList = genres;
+        notifyDataSetChanged();
+        shownAsDialog = true;
+    }
+
     class GenreViewHolder extends RecyclerView.ViewHolder {
 
-        TextView genreNameTextView, genreIdTextView;
+        TextView genreNameTextView, genreIdTextView, tv_genre_list_id_header, tv_genre_list_name_header;
         Button btnEdit, btnDelete;
+        CardView book_list_item_cardView;
 
         public GenreViewHolder(View itemView) {
             super(itemView);
 
+            book_list_item_cardView = (CardView) itemView.findViewById(R.id.book_list_item_cardView);
+            tv_genre_list_id_header = (TextView) itemView.findViewById(R.id.tv_genre_list_id_header);
+            tv_genre_list_name_header = (TextView) itemView.findViewById(R.id.tv_genre_list_name_header);
             genreNameTextView = (TextView) itemView.findViewById(R.id.genre_list_item_name);
             genreIdTextView = (TextView) itemView.findViewById(R.id.genre_list_item_id);
             btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
             btnDelete = (Button) itemView.findViewById(R.id.btnDelete);
+            if(shownAsDialog){
+                btnEdit.setVisibility(View.GONE);
+                btnDelete.setVisibility(View.GONE);
+                genreIdTextView.setVisibility(View.GONE);
+                tv_genre_list_name_header.setVisibility(View.GONE);
+                tv_genre_list_id_header.setVisibility(View.GONE);
+            }
         }
 
         void bind(final Genre genre) {

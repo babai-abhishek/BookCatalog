@@ -154,7 +154,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         recyclerView = (RecyclerView) v.findViewById(R.id.book_recycler_view);
         bookList = new ArrayList<>();
         bookAdapter = new BookAdapter(bookList, this, shownOnlyAsList);
-
+        shownOnlyAsList = false;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
