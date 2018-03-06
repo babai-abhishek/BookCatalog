@@ -44,6 +44,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     private RecyclerView recyclerView;
     FloatingActionButton fabAddBook;
     TextView tvHeader;
+    private static boolean shownOnlyAsList = false;
 
     BookFabButtonClickListener bookFabButtonClickListener;
     BookListFragmentInteractionListener listener;
@@ -89,7 +90,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     };
 
     public static BookListFragment newInstanceForGenre(String genreId) {
-
+        shownOnlyAsList = true;
         BookListFragment fragment = new BookListFragment();
         Bundle args = new Bundle();
         args.putString(ARGS_GENRE_ID, genreId);
@@ -99,7 +100,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     }
 
     public static BookListFragment newInstanceForAuthor(String authorId) {
-
+        shownOnlyAsList = true;
         BookListFragment fragment = new BookListFragment();
         Bundle args = new Bundle();
         args.putString(ARGS_AUTHOR_ID, authorId);
@@ -136,9 +137,9 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         mProgressDialog.setCancelable(false);
 
-        bookList = new ArrayList<>();
+        /*bookList = new ArrayList<>();
         bookAdapter = new BookAdapter(bookList, this);
-
+*/
     }
 
 
@@ -152,7 +153,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
         recyclerView = (RecyclerView) v.findViewById(R.id.book_recycler_view);
         bookList = new ArrayList<>();
-        bookAdapter = new BookAdapter(bookList, this);
+        bookAdapter = new BookAdapter(bookList, this, shownOnlyAsList);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);

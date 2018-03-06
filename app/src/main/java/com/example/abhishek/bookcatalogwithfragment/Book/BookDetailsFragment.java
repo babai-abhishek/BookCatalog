@@ -221,7 +221,8 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReload = false;
-                getAllBooksOfParticularGenre.onParticularGenreSelected(genre);
+                if(genre!=null)
+                    getAllBooksOfParticularGenre.onParticularGenreSelected(genre);
 
             }
         });
@@ -230,7 +231,8 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReload = false;
-                getAllBooksOfParticularAuthor.onParticularAuthorSelected(author);
+                if(author!=null)
+                    getAllBooksOfParticularAuthor.onParticularAuthorSelected(author);
             }
         });
 

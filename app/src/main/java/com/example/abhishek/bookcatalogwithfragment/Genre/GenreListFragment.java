@@ -233,7 +233,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
         });
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if(resultCode!= Activity.RESULT_OK)
@@ -246,7 +246,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
-    }
+    }*/
 
     private void showLoading() {
         adapter.setLoading(true);

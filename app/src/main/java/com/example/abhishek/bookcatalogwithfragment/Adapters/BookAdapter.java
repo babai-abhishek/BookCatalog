@@ -27,6 +27,7 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_EMPTY = 1;
 
     private boolean isLoading = false;
+    private boolean shownOnlyAsList = false;
 
     public void setLoading(boolean loading) {
         isLoading = loading;
@@ -37,9 +38,10 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return isLoading;
     }
 
-    public BookAdapter(List<Book> bookList, SelectBookFromListListener listListener) {
+    public BookAdapter(List<Book> bookList, SelectBookFromListListener listListener, boolean shownOnlyAsList) {
         this.bookList = bookList;
         this.listener = listListener;
+        this.shownOnlyAsList = shownOnlyAsList;
     }
 
     public interface SelectBookFromListListener{
@@ -86,12 +88,15 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             BookViewHolder bookViewHolder = (BookViewHolder) holder;
             final Book book = bookList.get(position);
             bookViewHolder.Bind(book);
-            bookViewHolder.bookListCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onSelectBook(bookList.indexOf(book));
-                }
-            });
+            if(!shownOnlyAsList){
+                bookViewHolder.bookListCardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listener.onSelectBook(bookList.indexOf(book));
+                    }
+                });
+            }
+
         }
 
     }
