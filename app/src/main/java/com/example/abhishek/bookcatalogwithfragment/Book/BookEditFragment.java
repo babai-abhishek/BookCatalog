@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
@@ -113,8 +114,8 @@ public class BookEditFragment extends Fragment {
             public void onClick(View v) {
                 FragmentManager manager = getChildFragmentManager();
                 FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectAuthor");
-                final SelectAuthorListFragment fragment = new SelectAuthorListFragment();
-                fragment.setTargetFragment(BookEditFragment.this, SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR);
+                final AuthorListFragment fragment = new AuthorListFragment();
+                fragment.setTargetFragment(BookEditFragment.this, AuthorListFragment.REQUEST_CODE_SELECT_AUTHOR);
                 fragment.show(transaction, "SelectAuthor");
             }
         });
@@ -172,7 +173,7 @@ public class BookEditFragment extends Fragment {
             return;
 
         switch (requestCode) {
-            case SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
+            case AuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
                 selectedAuthor = (Author) data.getParcelableExtra("author");
                 setAuthor(selectedAuthor.getName());
                 break;

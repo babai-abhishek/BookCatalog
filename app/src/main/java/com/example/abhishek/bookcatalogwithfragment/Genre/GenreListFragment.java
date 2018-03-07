@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,7 +29,6 @@ import android.widget.Toast;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.GenreAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.ListItemClickListener;
 import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
-import com.example.abhishek.bookcatalogwithfragment.Book.SelectAuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
@@ -151,6 +151,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View v = inflater.inflate(R.layout.fragment_genre_list, container, false);
         recyclerView = (RecyclerView) v.findViewById(R.id.genre_recycler_view);
 
@@ -183,6 +184,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
 
         return v;
     }
+
 
 
     @Override

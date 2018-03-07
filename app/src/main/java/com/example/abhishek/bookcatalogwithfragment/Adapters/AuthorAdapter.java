@@ -1,6 +1,7 @@
 package com.example.abhishek.bookcatalogwithfragment.Adapters;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.R;
 
 import java.util.List;
@@ -22,6 +24,8 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private List<Author> authorList;
     public static final int ACTION_EDIT = 0;
     public static final int ACTION_DELETE = 1;
+    private boolean shownAsDialog = false;
+
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
@@ -29,6 +33,8 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private boolean isLoading = false;
 
     ListItemClickListener listItemClickListener;
+    private SelectFromDialog selectFromDialog;
+
 
     public void setLoading(boolean loading) {
         isLoading = loading;
@@ -43,6 +49,16 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.authorList = authorListlist;
         this.listItemClickListener = listItemClickListener;
     }
+
+    public AuthorAdapter(List<Author> list, AuthorAdapter.SelectFromDialog selectFromDialog) {
+        this.authorList = list;
+        this.selectFromDialog = selectFromDialog;
+    }
+
+    public interface SelectFromDialog {
+        void onSelect(Author author);
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -95,6 +111,14 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     listItemClickListener.onAction(authorList.indexOf(author), ACTION_DELETE);
                 }
             });
+            if(shownAsDialog){
+                ((AuthorViewHolder) holder).author_list_item_cardView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selectFromDialog.onSelect(author);
+                    }
+                });
+            }
         }
     }
 
@@ -109,14 +133,27 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
+    public void setAuthorListForDialog(List<Author> authors) {
+        this.authorList = authors;
+        notifyDataSetChanged();
+        shownAsDialog = true;
+    }
+
     class AuthorViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tv_auth_name, tv_auth_id, tv_auth_language, tv_auth_country;
+        TextView tv_auth_name, tv_auth_id, tv_auth_language, tv_auth_country,
+                tv_author_list_id_header, tv_author_list_name_header, tv_author_list_language_header, tv_author_list_country_header ;
         Button btnEdit, btnDel;
+        CardView author_list_item_cardView;
 
         public AuthorViewHolder(View itemView) {
             super(itemView);
 
+            tv_author_list_id_header = (TextView) itemView.findViewById(R.id.tv_author_list_id_header);
+            tv_author_list_name_header = (TextView) itemView.findViewById(R.id.tv_author_list_name_header);
+            tv_author_list_language_header = (TextView) itemView.findViewById(R.id.tv_author_list_language_header);
+            tv_author_list_country_header = (TextView) itemView.findViewById(R.id.tv_author_list_country_header);
+            author_list_item_cardView = (CardView) itemView.findViewById(R.id.author_list_item_cardView);
             tv_auth_name = (TextView) itemView.findViewById(R.id.tv_author_name);
             tv_auth_id = (TextView) itemView.findViewById(R.id.tv_author_id);
             tv_auth_language = (TextView) itemView.findViewById(R.id.tv_author_language);
@@ -124,6 +161,18 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             btnEdit = (Button) itemView.findViewById(R.id.btn_author_edit);
             btnDel = (Button) itemView.findViewById(R.id.btn_author_delete);
+
+            if(shownAsDialog){
+                btnEdit.setVisibility(View.GONE);
+                btnDel.setVisibility(View.GONE);
+                tv_auth_id.setVisibility(View.GONE);
+                tv_auth_language.setVisibility(View.GONE);
+                tv_auth_country.setVisibility(View.GONE);
+                tv_author_list_id_header.setVisibility(View.GONE);
+                tv_author_list_name_header.setVisibility(View.GONE);
+                tv_author_list_language_header.setVisibility(View.GONE);
+                tv_author_list_country_header.setVisibility(View.GONE);
+            }
         }
 
         void bind(final Author author) {

@@ -102,7 +102,7 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             });
             if(shownAsDialog){
-                holder.book_list_item_cardView.setOnClickListener(new View.OnClickListener() {
+                holder.genre_list_item_cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         selectFromDialog.onSelect(genre);
@@ -144,12 +144,12 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         TextView genreNameTextView, genreIdTextView, tv_genre_list_id_header, tv_genre_list_name_header;
         Button btnEdit, btnDelete;
-        CardView book_list_item_cardView;
+        CardView genre_list_item_cardView;
 
         public GenreViewHolder(View itemView) {
             super(itemView);
 
-            book_list_item_cardView = (CardView) itemView.findViewById(R.id.book_list_item_cardView);
+            genre_list_item_cardView = (CardView) itemView.findViewById(R.id.genre_list_item_cardView);
             tv_genre_list_id_header = (TextView) itemView.findViewById(R.id.tv_genre_list_id_header);
             tv_genre_list_name_header = (TextView) itemView.findViewById(R.id.tv_genre_list_name_header);
             genreNameTextView = (TextView) itemView.findViewById(R.id.genre_list_item_name);

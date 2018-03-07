@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Genre List"
+        android:text="Author List"
         android:layout_marginBottom="10dp"/>
 
     <android.support.v7.widget.RecyclerView

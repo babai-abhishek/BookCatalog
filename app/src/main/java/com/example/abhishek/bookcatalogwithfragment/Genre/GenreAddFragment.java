@@ -3,6 +3,7 @@ package com.example.abhishek.bookcatalogwithfragment.Genre;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.Util.KeyBoardManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,24 +56,6 @@ public class GenreAddFragment extends DialogFragment {
       //  setHasOptionsMenu(true);
     }
 
-   /* @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-        inflater.inflate(R.menu.genre_add_fragment,menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.add_genre:
-                addNewGenre();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,11 +68,13 @@ public class GenreAddFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 addNewGenre();
+                new KeyBoardManager().cancelkeyBoard(getActivity());
             }
         });
 
         return v;
     }
+
 
     @NonNull
     @Override

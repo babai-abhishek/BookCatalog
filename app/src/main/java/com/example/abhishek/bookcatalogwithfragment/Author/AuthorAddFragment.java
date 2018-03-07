@@ -28,6 +28,7 @@ import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.Util.KeyBoardManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,25 +55,6 @@ public class AuthorAddFragment extends DialogFragment {
        // setHasOptionsMenu(true);
     }
 
-   /* @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-        inflater.inflate(R.menu.author_add_fragment,menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.add_author:
-                addNewAuthor();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-*/
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -88,6 +70,8 @@ public class AuthorAddFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 addNewAuthor();
+                new KeyBoardManager().cancelkeyBoard(getActivity());
+
             }
         });
 

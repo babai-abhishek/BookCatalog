@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
@@ -30,6 +31,7 @@ import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.Util.KeyBoardManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -74,6 +76,7 @@ public class BookAddFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_book:
+                new KeyBoardManager().cancelkeyBoard(getActivity());
                 addNewBook();
                 return true;
         }
@@ -132,9 +135,9 @@ public class BookAddFragment extends Fragment {
 
                 FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectAuthor");
 
-                final SelectAuthorListFragment fragment = new SelectAuthorListFragment();
+                final AuthorListFragment fragment = new AuthorListFragment();
 
-                fragment.setTargetFragment(BookAddFragment.this, SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR);
+                fragment.setTargetFragment(BookAddFragment.this, AuthorListFragment.REQUEST_CODE_SELECT_AUTHOR);
 
                 fragment.show(transaction, "SelectAuthor");
 
@@ -154,16 +157,6 @@ public class BookAddFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // show the genres in a list and select from there
-               /* FragmentManager manager = getChildFragmentManager();
-
-                FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectGenre");
-
-                final SelectGenreListFragment fragment = new SelectGenreListFragment();
-
-                fragment.setTargetFragment(BookAddFragment.this, SelectGenreListFragment.REQUEST_CODE_SELECT_GENRE);
-
-                fragment.show(transaction, "SelectGenre");*/
-
                 FragmentManager manager = getChildFragmentManager();
 
                 FragmentTransaction transaction = manager.beginTransaction().addToBackStack("SelectGenre");
@@ -225,6 +218,7 @@ public class BookAddFragment extends Fragment {
     }
 
     private void setGenre() {
+
         if (selectedGenre.getName() == null) {
             tvGenreType.setText("Click to select genre");
         } else {
@@ -249,7 +243,7 @@ public class BookAddFragment extends Fragment {
             return;
 
         switch (requestCode) {
-            case SelectAuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
+            case AuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
                 selectedAuthor = (Author) data.getParcelableExtra("author");
                 setAuthor();
                 break;

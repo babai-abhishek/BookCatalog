@@ -1,6 +1,7 @@
 package com.example.abhishek.bookcatalogwithfragment.Author;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,13 +21,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.AuthorAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.GenreAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.ListItemClickListener;
+import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
@@ -42,13 +49,17 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AuthorListFragment extends DialogFragment implements ListItemClickListener {
+public class AuthorListFragment extends DialogFragment implements ListItemClickListener, AuthorAdapter.SelectFromDialog {
 
     private AuthorListFragmentInteractionListener listener;
     private AuthorFabButtonClickListener authorFabButtonClickListener;
-
+    boolean shownAsDialog = false;
+    private Author selectedAuthor;
     private RecyclerView recyclerView;
     FloatingActionButton fabAddAuthor;
+
+    public static final int REQUEST_CODE_SELECT_AUTHOR = 1;
+    public static final int REQUEST_CODE_ADD_AUTHOR = 0;
 
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
@@ -57,6 +68,7 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
     private static final String ACTION_AUTHOR_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.authors.all.result.success";
     private static final String ACTION_AUTHOR_LIST_API_FAILURE = "com.example.abhishek.bookcatalogwithfragment.api.authors.all.result.failure";
     private static final String KEY_AUTHORS = "authors";
+    private static final String TAG_FRAGMENT_AUTHOR_ADD ="AuthorAddFragment";
 
     private static final String KEY_SHOULD_RELOAD_ON_RESUME = "shouldLoadOnResume";
     public static final String KEY_IS_AUTHOR_LOADED = "isAuthorLoaded";
@@ -78,7 +90,11 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
                 case ACTION_AUTHOR_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
                     authors = Arrays.asList((Author[]) intent.getParcelableArrayExtra(KEY_AUTHORS));
-                    adapter.setAuthorList(authors);
+                    if(!shownAsDialog){
+                        adapter.setAuthorList(authors);
+                    }else {
+                        adapter.setAuthorListForDialog(authors);
+                    }
                     isAuthorLoaded = true;
                     postLoad();
                     break;
@@ -125,7 +141,11 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
         mProgressDialog.setCancelable(false);
 
         authors = new ArrayList<>();
-        adapter = new AuthorAdapter(authors, this);
+        if(shownAsDialog){
+            adapter = new AuthorAdapter(authors, (AuthorAdapter.SelectFromDialog) this);
+        }else {
+            adapter = new AuthorAdapter(authors, (ListItemClickListener) this);
+        }
 
         loadAuthors();
     }
@@ -147,12 +167,34 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
         fabAddAuthor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shouldReloadOnResume = true;
-                authorFabButtonClickListener.onAuthorFabClick();
+                if(!shownAsDialog){
+                    shouldReloadOnResume = true;
+                    authorFabButtonClickListener.onAuthorFabClick();
+                }else {
+                    FragmentManager manager = getChildFragmentManager();
+
+                    FragmentTransaction transaction = manager.beginTransaction().addToBackStack(TAG_FRAGMENT_AUTHOR_ADD);
+
+                    final AuthorAddFragment fragment = new AuthorAddFragment();
+
+                    fragment.setTargetFragment(AuthorListFragment.this, REQUEST_CODE_ADD_AUTHOR);
+
+                    fragment.show(transaction, TAG_FRAGMENT_AUTHOR_ADD);
+                }
             }
         });
+     //   getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         return v;
+    }
+
+    @Override
+    public int show(FragmentTransaction transaction, String tag) {
+        int ret = super.show(transaction, tag);
+
+        shownAsDialog = true;
+
+        return ret;
     }
 
     @Override
@@ -230,6 +272,13 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
 
     }
 
+    private void dispatchSelectedAuthor() {
+        Intent i = new Intent();
+        i.putExtra("author", selectedAuthor);
+        getTargetFragment().onActivityResult(REQUEST_CODE_SELECT_AUTHOR, Activity.RESULT_OK, i);
+        dismiss();
+    }
+
     private void showLoading() {
         adapter.setLoading(true);
         if (mProgressDialog.isShowing())
@@ -248,6 +297,27 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
         if (isAuthorLoaded)
             hideLoading();
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode!= Activity.RESULT_OK)
+            return;
+
+        switch (requestCode) {
+            case REQUEST_CODE_ADD_AUTHOR:
+                selectedAuthor = (Author) data.getParcelableExtra("author");
+                dispatchSelectedAuthor();
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onSelect(Author author) {
+        selectedAuthor = author;
+        dispatchSelectedAuthor();
+    }
 
     public interface AuthorListFragmentInteractionListener {
         void onAuthorSelected(String authName, String authId, String authLanguage, String authCountry);
@@ -256,4 +326,5 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
     public interface AuthorFabButtonClickListener{
         public void onAuthorFabClick();
     }
+
 }
