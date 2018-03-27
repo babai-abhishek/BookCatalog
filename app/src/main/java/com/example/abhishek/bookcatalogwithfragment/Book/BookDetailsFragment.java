@@ -6,26 +6,31 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.squareup.picasso.Picasso;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -41,6 +46,7 @@ public class BookDetailsFragment extends Fragment {
             tvGenreType, tvAuthoName, tvFindBookByGenre, tvFindBookByAuthor;
     Button btnEditBook, btnDeleteBook;
     ProgressDialog mProgressDialog;
+    ImageView ivBookDetails;
 
     private static final String KEY_GENRE = "genre";
     private static final String KEY_AUTHOR = "author";
@@ -168,7 +174,7 @@ public class BookDetailsFragment extends Fragment {
 
         broadcastManager = LocalBroadcastManager.getInstance(getActivity());
 
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             if (getArguments() == null)
                 throw new RuntimeException("BookDetailsFragment must have arguments set. Are you calling BookDetailsFragment constructor directly? If so, consider using getInstance()");
             Bundle args = getArguments();
@@ -176,7 +182,7 @@ public class BookDetailsFragment extends Fragment {
             if (!args.containsKey(ARGS_SELECTED_BOOK))
                 throw new RuntimeException("BookDetailsFragment has arguments set, but arguments does not contain any selectedBook");
             book = args.getParcelable(ARGS_SELECTED_BOOK);
-        }
+        }*/
 
     }
 
@@ -185,7 +191,7 @@ public class BookDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_book_details, container, false);
-
+        ivBookDetails = (ImageView) v.findViewById(R.id.ivBookDetails);
         tvBookName = (TextView) v.findViewById(R.id.tv_book_name);
         tvBookId = (TextView) v.findViewById(R.id.tv_book_id);
         tvBookLanguage = (TextView) v.findViewById(R.id.tv_book_language);
@@ -198,22 +204,38 @@ public class BookDetailsFragment extends Fragment {
         tvFindBookByGenre = (TextView) v.findViewById(R.id.tv_find_all_by_genre_type);
 
 
-        btnEditBook = (Button) v.findViewById(R.id.btn_book_edit);
-        btnDeleteBook = (Button) v.findViewById(R.id.btn_book_delete);
+       /* btnEditBook = (Button) v.findViewById(R.id.btn_book_edit);
+        btnDeleteBook = (Button) v.findViewById(R.id.btn_book_delete);*/
 
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         mProgressDialog.setCancelable(false);
 
-        tvBookName.setText(book.getName());
-        tvBookId.setText(book.getId());
-        tvBookLanguage.setText(book.getLanguage());
-        tvBookPublishDate.setText(book.getPublished());
-        tvBookNoOfPages.setText(String.valueOf(book.getPages()));
+        Bundle b = getArguments();
+        if (b != null) {
+            String transitionName = b.getString("transitionName");
+            DummyBook book = (DummyBook) b.getSerializable("book");
 
-        loadGenreType(book.getGenreId());
-        loadAuthorName(book.getAuthorId());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ivBookDetails.setTransitionName(transitionName);
+            }
+
+            if (book != null) {
+                if (!TextUtils.isEmpty(book.getImageUrl()))
+                    Picasso.get().load(book.getImageUrl()).into(ivBookDetails);
+
+                tvBookName.setText(book.getBook().getName());
+                tvBookId.setText(book.getBook().getId());
+                tvBookLanguage.setText(book.getBook().getLanguage());
+                tvBookPublishDate.setText(book.getBook().getPublished());
+                tvBookNoOfPages.setText(String.valueOf(book.getBook().getPages()));
+
+                loadGenreType(book.getBook().getGenreId());
+                loadAuthorName(book.getBook().getAuthorId());
+            }
+        }
+
 
         tvFindBookByGenre.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,7 +256,7 @@ public class BookDetailsFragment extends Fragment {
             }
         });
 
-        btnDeleteBook.setOnClickListener(new View.OnClickListener() {
+     /*   btnDeleteBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Call<ResponseBody> call = bookService.deleteBookEntry(book.getId());
@@ -264,7 +286,7 @@ public class BookDetailsFragment extends Fragment {
                     bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
             }
         });
-
+*/
         return v;
     }
 

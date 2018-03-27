@@ -13,16 +13,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.abhishek.bookcatalogwithfragment.Adapters.AuthorAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.BookAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.Model.DummyBookImageUrls;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
@@ -62,7 +63,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     private static final String ARGS_AUTHOR_ID = "authorId";
 
     String listType = null, filterId = null;
-
+    ArrayList<DummyBook> dummyBooks;
 
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
     private List<Book> bookList;
@@ -75,7 +76,10 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
                 case ACTION_BOOK_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
                     bookList = Arrays.asList((Book[]) intent.getParcelableArrayExtra(KEY_BOOK));
-                    bookAdapter.setBookList(bookList);
+                    for(int i=0 ; i<bookList.size() ; i++){
+                        dummyBooks.add(new DummyBook(DummyBookImageUrls.getImageUrl(i), bookList.get(i)));
+                    }
+                    bookAdapter.setBookList(dummyBooks);
                     isBookLoaded = true;
                     postLoad();
                     break;
@@ -142,7 +146,6 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 */
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -153,7 +156,9 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
         recyclerView = (RecyclerView) v.findViewById(R.id.book_recycler_view);
         bookList = new ArrayList<>();
-        bookAdapter = new BookAdapter(bookList, this, shownOnlyAsList);
+        dummyBooks = new ArrayList<>();
+       // bookAdapter = new BookAdapter(bookList, this, shownOnlyAsList);
+        bookAdapter = new BookAdapter(dummyBooks, this, shownOnlyAsList);
         shownOnlyAsList = false;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
@@ -186,8 +191,6 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
         fabAddBook.setVisibility(listType==null?View.VISIBLE:View.GONE);
 
-        loadBooks();
-
         return v;
     }
 
@@ -199,10 +202,10 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         filter.addAction(ACTION_BOOK_LIST_API_SUCCESS);
         filter.addAction(ACTION_BOOK_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
-        if (shouldReloadOnResume) {
+       // if (shouldReloadOnResume) {
             loadBooks();
-        }
-        shouldReloadOnResume = false;
+        /*}
+        shouldReloadOnResume = false;*/
     }
 
     @Override
@@ -269,14 +272,31 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     }
 
     @Override
-    public void onSelectBook(int position) {
+    public void onSelectBook(int position, ImageView ivBook) {
         shouldReloadOnResume = true;
-        Book selectedBook = bookList.get(position);
-        listener.onBookSelected(selectedBook);
+       /* Book selectedBook = bookList.get(position);
+        listener.onBookSelected(selectedBook);*/
+        DummyBook selectedBook = dummyBooks.get(position);
+        /*
+        *  MovieDetailFragment movieDetail = new MovieDetailFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("transitionName", "transition" + position);
+            bundle.putSerializable("movie", movie);
+
+            movieDetail.setArguments(bundle);
+            ((MainActivity) context).showFragmentWithTransition(
+                    this,
+                    movieDetail,
+                    "movieDetail",
+                    view,
+                    "transition" + position);
+        }*/
+        listener.onBookSelected(this, position, selectedBook, ivBook);
     }
 
     public interface BookListFragmentInteractionListener {
-        void onBookSelected(Book book);
+      //  void onBookSelected(Book book);
+          void onBookSelected(BookListFragment bookListFragment, int position, DummyBook book, ImageView view);
     }
 
     public interface BookFabButtonClickListener {

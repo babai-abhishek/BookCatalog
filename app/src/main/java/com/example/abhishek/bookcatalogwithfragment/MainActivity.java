@@ -1,12 +1,14 @@
 package com.example.abhishek.bookcatalogwithfragment;
 
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.transition.TransitionInflater;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorEditFragment;
@@ -20,6 +22,7 @@ import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 
 public class MainActivity extends AppCompatActivity implements
@@ -63,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements
         manager = getSupportFragmentManager();
 
         //if(savedInstanceState == null){
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.flFragmentContainer, new OptionsFragment(),TAG_FRAGMENT_OPTIONS);
-            transaction.commit();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.flFragmentContainer, new OptionsFragment(),TAG_FRAGMENT_OPTIONS);
+        transaction.commit();
        /* }
         else {
             if(restoreGenreFragment=savedInstanceState.getBoolean(KEY_RESTORE_GENRE_LIST_FRAGMENT)){
@@ -87,11 +90,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onGenreClicked(Fragment fragment) {
-          //  restoreGenreFragment = true;
-            manager.beginTransaction()
-                    .replace(R.id.flFragmentContainer, new GenreListFragment(), TAG_FRAGMENT_GENRE_LIST)
-                    .addToBackStack(TAG_FRAGMENT_GENRE_LIST)
-                    .commit();
+        //  restoreGenreFragment = true;
+        manager.beginTransaction()
+                .replace(R.id.flFragmentContainer, new GenreListFragment(), TAG_FRAGMENT_GENRE_LIST)
+                .addToBackStack(TAG_FRAGMENT_GENRE_LIST)
+                .commit();
 
     }
 
@@ -152,14 +155,14 @@ public class MainActivity extends AppCompatActivity implements
                 .commit();
 
     }
-
+/*
     @Override
     public void onBookSelected(Book book) {
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, BookDetailsFragment.getInstance(book), TAG_FRAGMENT_BOOK_DETAILS)
                 .addToBackStack(TAG_FRAGMENT_BOOK_DETAILS)
                 .commit();
-    }
+    }*/
 
     @Override
     public void onParticularGenreSelected(Genre genre) {
@@ -183,5 +186,31 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.flFragmentContainer, BookEditFragment.newInstance(book, genre, author), TAG_FRAGMENT_BOOK_EDIT)
                 .addToBackStack(TAG_FRAGMENT_BOOK_EDIT)
                 .commit();
+    }
+
+    @Override
+    public void onBookSelected(BookListFragment current, int position, DummyBook book, ImageView view) {
+       /* manager.beginTransaction()
+                .replace(R.id.flFragmentContainer, BookDetailsFragment.getInstance(book), TAG_FRAGMENT_BOOK_DETAILS)
+                .addToBackStack(TAG_FRAGMENT_BOOK_DETAILS)
+                .commit();*/
+        BookDetailsFragment newFragment = new BookDetailsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("transitionName", "transition" + position);
+        bundle.putSerializable("book", book);
+        newFragment.setArguments(bundle);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            current.setSharedElementReturnTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
+            current.setExitTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.no_transition));
+
+            newFragment.setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.default_transition));
+            newFragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.no_transition));
+        }
+
+        manager.beginTransaction()
+        .replace(R.id.flFragmentContainer, newFragment, TAG_FRAGMENT_BOOK_DETAILS)
+        .addToBackStack(TAG_FRAGMENT_BOOK_DETAILS)
+        .addSharedElement(view, "transition" + position)
+        .commit();
     }
 }

@@ -1,17 +1,22 @@
 package com.example.abhishek.bookcatalogwithfragment.Adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Book;
+import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
+import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,14 +25,21 @@ import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Book> bookList;
+   // private List<Book> bookList;
     private SelectBookFromListListener listener;
+    private List<DummyBook> dummyBooks;
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
 
     private boolean isLoading = false;
     private boolean shownOnlyAsList = false;
+
+    public BookAdapter(ArrayList<DummyBook> dummyBooks, BookListFragment listListener, boolean shownOnlyAsList) {
+        this.dummyBooks = dummyBooks;
+        this.listener = listListener;
+        this.shownOnlyAsList = shownOnlyAsList;
+    }
 
     public void setLoading(boolean loading) {
         isLoading = loading;
@@ -38,20 +50,25 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return isLoading;
     }
 
-    public BookAdapter(List<Book> bookList, SelectBookFromListListener listListener, boolean shownOnlyAsList) {
+    /*public BookAdapter(List<Book> bookList, SelectBookFromListListener listListener, boolean shownOnlyAsList) {
         this.bookList = bookList;
         this.listener = listListener;
         this.shownOnlyAsList = shownOnlyAsList;
     }
+*/
+    public void setBookList(ArrayList<DummyBook> dummyBooks) {
+        this.dummyBooks = dummyBooks;
+        notifyDataSetChanged();
+    }
 
     public interface SelectBookFromListListener{
-         void onSelectBook(int position);
+         void onSelectBook(int position, ImageView ivBook);
     }
 
     @Override
     public int getItemViewType(int position) {
         //return super.getItemViewType(position);
-        if(bookList.size()<1 || isLoading())
+        if(dummyBooks.size()<1 || isLoading())
             return VIEW_TYPE_EMPTY;
         else
             return VIEW_TYPE_ITEM;
@@ -79,20 +96,23 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
 
-        if (bookList.size() < 1 || isLoading()) {
+        if (dummyBooks.size() < 1 || isLoading()) {
             ((EmptyListViewHolder) holder).emptyListMessage.setText(isLoading() ? "Loading...." : "No items found!");
         }
         else {
             BookViewHolder bookViewHolder = (BookViewHolder) holder;
-            final Book book = bookList.get(position);
+            final DummyBook book = dummyBooks.get(position);
             bookViewHolder.Bind(book);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ((BookViewHolder) holder).ivBook.setTransitionName("transition" + position);
+            }
             if(!shownOnlyAsList){
                 bookViewHolder.bookListCardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listener.onSelectBook(bookList.indexOf(book));
+                        listener.onSelectBook(dummyBooks.indexOf(book), ((BookViewHolder) holder).ivBook);
                     }
                 });
             }
@@ -103,31 +123,34 @@ public class BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        int bookListSize = bookList.size();
+        int bookListSize = dummyBooks.size();
         return bookListSize<1 || isLoading() ? 1 : bookListSize;
     }
 
-    public void setBookList(List<Book> bookList) {
+   /* public void setBookList(List<Book> bookList) {
         this.bookList = bookList;
         notifyDataSetChanged();
     }
-
+*/
     class BookViewHolder extends RecyclerView.ViewHolder{
 
-        TextView tvBookName,tvBookId;
+        TextView tvBookName,tv_book_publishDate_list;
         CardView bookListCardView;
+        ImageView ivBook;
 
         public BookViewHolder(View itemView) {
             super(itemView);
 
             tvBookName = (TextView) itemView.findViewById(R.id.tv_book_name_list);
-            tvBookId = (TextView) itemView.findViewById(R.id.tv_book_id_list);
+            tv_book_publishDate_list = (TextView) itemView.findViewById(R.id.tv_book_publishDate_list);
             bookListCardView = (CardView) itemView.findViewById(R.id.book_list_item_cardView);
+            ivBook = (ImageView) itemView.findViewById(R.id.ivBook);
         }
 
-        void Bind(Book book){
-            tvBookName.setText(book.getName());
-            tvBookId.setText(book.getId());
+        void Bind(DummyBook book){
+            tvBookName.setText(book.getBook().getName());
+            tv_book_publishDate_list.setText("Published on : "+book.getBook().getPublished());
+            Picasso.get().load(book.getImageUrl()).into(ivBook);
         }
     }
 
