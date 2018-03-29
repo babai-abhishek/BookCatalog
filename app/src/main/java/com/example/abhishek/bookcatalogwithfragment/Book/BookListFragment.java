@@ -277,20 +277,6 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
        /* Book selectedBook = bookList.get(position);
         listener.onBookSelected(selectedBook);*/
         DummyBook selectedBook = dummyBooks.get(position);
-        /*
-        *  MovieDetailFragment movieDetail = new MovieDetailFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("transitionName", "transition" + position);
-            bundle.putSerializable("movie", movie);
-
-            movieDetail.setArguments(bundle);
-            ((MainActivity) context).showFragmentWithTransition(
-                    this,
-                    movieDetail,
-                    "movieDetail",
-                    view,
-                    "transition" + position);
-        }*/
         listener.onBookSelected(this, position, selectedBook, ivBook);
     }
 

@@ -19,6 +19,7 @@ import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
@@ -40,13 +41,14 @@ public class BookEditFragment extends Fragment {
 
     Author selectedAuthor = new Author();
     Genre selectedGenre = new Genre();
-    Book selectedBook = new Book();
+    //Book selectedBook = new Book();
+    DummyBook selectedBook = new DummyBook();
 
     public BookEditFragment() {
         // Required empty public constructor
     }
 
-    public static BookEditFragment newInstance(Book book, Genre genre, Author author) {
+    public static BookEditFragment newInstance(DummyBook book, Genre genre, Author author) {
         BookEditFragment fragment = new BookEditFragment();
         Bundle args = new Bundle();
         args.putParcelable("genre", genre);
@@ -95,10 +97,10 @@ public class BookEditFragment extends Fragment {
         btnChangeAuthor = (Button) v.findViewById(R.id.btn_change_author);
         btnChangeGenre = (Button) v.findViewById(R.id.btn_change_genre);
 
-        etBookName.setText(selectedBook.getName());
-        etBookLang.setText(selectedBook.getLanguage());
-        etBookPublishDate.setText(selectedBook.getPublished());
-        etBookPages.setText(String.valueOf(selectedBook.getPages()));
+        etBookName.setText(selectedBook.getBook().getName());
+        etBookLang.setText(selectedBook.getBook().getLanguage());
+        etBookPublishDate.setText(selectedBook.getBook().getPublished());
+        etBookPages.setText(String.valueOf(selectedBook.getBook().getPages()));
         setAuthor(selectedAuthor.getName());
         setGenre(selectedGenre.getName());
 
@@ -136,7 +138,7 @@ public class BookEditFragment extends Fragment {
 
     private void updateBook() {
 
-        Call<Book> call = bookService.updateBookEntry(selectedBook.getId(),
+        Call<Book> call = bookService.updateBookEntry(selectedBook.getBook().getId(),
                 new Book(etBookName.getText().toString(),
                         etBookLang.getText().toString(),
                         etBookPublishDate.getText().toString(),

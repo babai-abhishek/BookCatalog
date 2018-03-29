@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -16,7 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +44,7 @@ public class BookDetailsFragment extends Fragment {
 
     TextView tvBookName, tvBookLanguage, tvBookPublishDate, tvBookNoOfPages, tvBookId,
             tvGenreType, tvAuthoName, tvFindBookByGenre, tvFindBookByAuthor;
-    Button btnEditBook, btnDeleteBook;
+    FloatingActionButton btnEditBook, btnDeleteBook;
     ProgressDialog mProgressDialog;
     ImageView ivBookDetails;
 
@@ -58,7 +58,10 @@ public class BookDetailsFragment extends Fragment {
     private boolean shouldReload = false;
     private boolean isGenreLoaded = false, isAuthorLoaded = false, isBookLoaded = false;
 
-    Book book;
+    private String dummyImgUrl;
+
+  //  Book book;
+    DummyBook book;
     Author author;
     Genre genre;
 
@@ -88,9 +91,9 @@ public class BookDetailsFragment extends Fragment {
                 case ACTION_AUTHOR_NAME_API_SUCCESS:
                     author = intent.getParcelableExtra(AUTHOR_KEY_FOR_BROADCASTRECEIVER);
                     if (author != null) {
-                        tvAuthoName.setText(author.getName());
+                        tvAuthoName.setText("Author : "+author.getName());
                     } else {
-                        tvAuthoName.setText("Not found ! ");
+                        tvAuthoName.setText("Author : Not found ! ");
                     }
                     isAuthorLoaded = true;
                     postLoad();
@@ -105,9 +108,9 @@ public class BookDetailsFragment extends Fragment {
                 case ACTION_GENRE_TYPE_API_SUCCESS:
                     genre = intent.getParcelableExtra(GENRE_KEY_FOR_BROADCASTRECEIVER);
                     if (genre != null) {
-                        tvGenreType.setText(genre.getName());
+                        tvGenreType.setText("Genre type : "+genre.getName());
                     } else {
-                        tvGenreType.setText("Not found !");
+                        tvGenreType.setText("Genre type : Not found !");
                     }
 
                     isGenreLoaded = true;
@@ -120,15 +123,19 @@ public class BookDetailsFragment extends Fragment {
                     postLoad();
                     break;
                 case ACTION_RELOAD_BOOK_LIST_API_SUCCESS:
-                    book = intent.getParcelableExtra(BOOK_KEY_FOR_BROADCASTRECEIVER);
-                    tvBookName.setText(book.getName());
-                    tvBookId.setText(book.getId());
-                    tvBookLanguage.setText(book.getLanguage());
-                    tvBookPublishDate.setText(book.getPublished());
-                    tvBookNoOfPages.setText(String.valueOf(book.getPages()));
+                    Book extra = intent.getParcelableExtra(BOOK_KEY_FOR_BROADCASTRECEIVER);
+                    book.setBook(extra);
+                    book.setImageUrl(dummyImgUrl);
+                    /*tvBookName.setText(book.getBook().getName());
+                    tvBookId.setText(book.getBook().getId());
+                    tvBookLanguage.setText(book.getBook().getLanguage());
+                    tvBookPublishDate.setText(book.getBook().getPublished());
+                    tvBookNoOfPages.setText(String.valueOf(book.getBook().getPages()));
                     isBookLoaded = true;
-                    loadAuthorName(book.getAuthorId());
-                    loadGenreType(book.getGenreId());
+                    loadAuthorName(book.getBook().getAuthorId());
+                    loadGenreType(book.getBook().getGenreId());*/
+                    isBookLoaded = true;
+                    setDataToViews(book);
                     break;
                 case ACTION_RELOAD_BOOK_LIST_API_FAILURE:
                     Toast.makeText(getActivity(), "Api Failure", Toast.LENGTH_SHORT).show();
@@ -204,35 +211,25 @@ public class BookDetailsFragment extends Fragment {
         tvFindBookByGenre = (TextView) v.findViewById(R.id.tv_find_all_by_genre_type);
 
 
-       /* btnEditBook = (Button) v.findViewById(R.id.btn_book_edit);
-        btnDeleteBook = (Button) v.findViewById(R.id.btn_book_delete);*/
+        btnEditBook = (FloatingActionButton) v.findViewById(R.id.btn_book_edit);
+        btnDeleteBook = (FloatingActionButton) v.findViewById(R.id.btn_book_delete);
 
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         mProgressDialog.setCancelable(false);
 
-        Bundle b = getArguments();
+        final Bundle b = getArguments();
         if (b != null) {
             String transitionName = b.getString("transitionName");
-            DummyBook book = (DummyBook) b.getSerializable("book");
+            book = (DummyBook) b.getSerializable("book");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 ivBookDetails.setTransitionName(transitionName);
             }
 
             if (book != null) {
-                if (!TextUtils.isEmpty(book.getImageUrl()))
-                    Picasso.get().load(book.getImageUrl()).into(ivBookDetails);
-
-                tvBookName.setText(book.getBook().getName());
-                tvBookId.setText(book.getBook().getId());
-                tvBookLanguage.setText(book.getBook().getLanguage());
-                tvBookPublishDate.setText(book.getBook().getPublished());
-                tvBookNoOfPages.setText(String.valueOf(book.getBook().getPages()));
-
-                loadGenreType(book.getBook().getGenreId());
-                loadAuthorName(book.getBook().getAuthorId());
+                setDataToViews(book);
             }
         }
 
@@ -256,10 +253,10 @@ public class BookDetailsFragment extends Fragment {
             }
         });
 
-     /*   btnDeleteBook.setOnClickListener(new View.OnClickListener() {
+        btnDeleteBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<ResponseBody> call = bookService.deleteBookEntry(book.getId());
+                Call<ResponseBody> call = bookService.deleteBookEntry(book.getBook().getId());
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -280,18 +277,32 @@ public class BookDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 shouldReload = true;
+                dummyImgUrl = book.getImageUrl();
                 if (genre == null) {
                     bookDetailsEditButtonClickListener.onEditClicked(book, new Genre(), author);
                 } else
                     bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
             }
         });
-*/
         return v;
     }
 
+    private void setDataToViews(DummyBook book) {
+        if (!TextUtils.isEmpty(book.getImageUrl()))
+            Picasso.get().load(book.getImageUrl()).into(ivBookDetails);
+
+        tvBookName.setText(book.getBook().getName());
+        tvBookId.setText("Id : "+book.getBook().getId());
+        tvBookLanguage.setText("Language : "+book.getBook().getLanguage());
+        tvBookPublishDate.setText("Date of publish : "+book.getBook().getPublished());
+        tvBookNoOfPages.setText("Pages : "+String.valueOf(book.getBook().getPages()));
+
+        loadGenreType(book.getBook().getGenreId());
+        loadAuthorName(book.getBook().getAuthorId());
+    }
+
     public interface BookDetailsEditButtonClickListener {
-        void onEditClicked(Book book, Genre genre, Author author);
+        void onEditClicked(DummyBook book, Genre genre, Author author);
     }
 
     public interface GetAllBooksOfParticularGenre {
@@ -315,7 +326,7 @@ public class BookDetailsFragment extends Fragment {
         broadcastManager.registerReceiver(broadcastReceiver, filter);
 
         if (shouldReload) {
-            reloadUpdatedBook(book.getId());
+            reloadUpdatedBook(book.getBook().getId());
         }
         shouldReload = false;
     }

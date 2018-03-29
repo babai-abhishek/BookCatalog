@@ -21,7 +21,6 @@ import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Book;
 import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 
@@ -181,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onEditClicked(Book book, Genre genre, Author author) {
+    public void onEditClicked(DummyBook book, Genre genre, Author author) {
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, BookEditFragment.newInstance(book, genre, author), TAG_FRAGMENT_BOOK_EDIT)
                 .addToBackStack(TAG_FRAGMENT_BOOK_EDIT)
