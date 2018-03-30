@@ -21,7 +21,7 @@ import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
 import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;

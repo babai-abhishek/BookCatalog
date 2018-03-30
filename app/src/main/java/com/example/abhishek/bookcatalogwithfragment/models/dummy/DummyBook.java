@@ -1,9 +1,9 @@
-package com.example.abhishek.bookcatalogwithfragment.Model.ApiModel;
+package com.example.abhishek.bookcatalogwithfragment.models.dummy;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.BookBusinessModel;
 
 import java.io.Serializable;
 
@@ -14,19 +14,19 @@ import java.io.Serializable;
 public class DummyBook implements Serializable, Parcelable {
 
     private String imageUrl;
-    private Book book;
+    private BookBusinessModel book;
 
     public DummyBook() {
     }
 
-    public DummyBook(String imageUrl, Book book) {
+    public DummyBook(String imageUrl, BookBusinessModel book) {
         this.imageUrl = imageUrl;
         this.book = book;
     }
 
     protected DummyBook(Parcel in) {
         imageUrl = in.readString();
-        book = in.readParcelable(Book.class.getClassLoader());
+        book = in.readParcelable(BookBusinessModel.class.getClassLoader());
     }
 
     public static final Creator<DummyBook> CREATOR = new Creator<DummyBook>() {
@@ -49,11 +49,11 @@ public class DummyBook implements Serializable, Parcelable {
         this.imageUrl = imageUrl;
     }
 
-    public Book getBook() {
+    public BookBusinessModel getBook() {
         return book;
     }
 
-    public void setBook(Book book) {
+    public void setBook(BookBusinessModel book) {
         this.book = book;
     }
 

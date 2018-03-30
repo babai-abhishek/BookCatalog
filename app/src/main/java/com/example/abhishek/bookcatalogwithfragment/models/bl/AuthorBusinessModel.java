@@ -20,6 +20,13 @@ public class AuthorBusinessModel implements Parcelable{
     public AuthorBusinessModel() {
     }
 
+    public AuthorBusinessModel(String name, String language, String country, String id) {
+        this.name = name;
+        this.language = language;
+        this.country = country;
+        this.id = id;
+    }
+
     public AuthorBusinessModel(AuthorApiModel authorApiModel) {
         this.name = authorApiModel.getName();
         this.country = authorApiModel.getCountry();

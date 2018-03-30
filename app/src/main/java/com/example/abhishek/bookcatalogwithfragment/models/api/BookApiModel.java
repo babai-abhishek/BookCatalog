@@ -1,54 +1,26 @@
-package com.example.abhishek.bookcatalogwithfragment.Model;
+package com.example.abhishek.bookcatalogwithfragment.models.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+/**
+ * Created by abhishek on 31/3/18.
+ */
 
-public class Book implements Parcelable {
+public class BookApiModel implements Parcelable {
 
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("language")
-    @Expose
     private String language;
-    @SerializedName("published")
-    @Expose
     private String published;
-    @SerializedName("pages")
-    @Expose
     private int pages;
-    @SerializedName("authorId")
-    @Expose
     private String authorId;
-    @SerializedName("genreId")
-    @Expose
     private String genreId;
-    @SerializedName("_id")
-    @Expose
     private String id;
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public Book() {
+    public BookApiModel() {
     }
 
-    public Book(String name, String language, String published, int pages, String authorId, String genreId) {
-        this.name = name;
-        this.language = language;
-        this.published = published;
-        this.pages = pages;
-        this.authorId = authorId;
-        this.genreId = genreId;
-    }
-
- /*   */
-
-    protected Book(Parcel in) {
+    protected BookApiModel(Parcel in) {
         name = in.readString();
         language = in.readString();
         published = in.readString();
@@ -58,17 +30,15 @@ public class Book implements Parcelable {
         id = in.readString();
     }
 
-    public static final Creator<Book> CREATOR = new Creator<Book>() {
-        @Override
-        public Book createFromParcel(Parcel in) {
-            return new Book(in);
-        }
-
-        @Override
-        public Book[] newArray(int size) {
-            return new Book[size];
-        }
-    };
+    public BookApiModel(String name, String language, String published, int pages, String authorId, String genreId, String id) {
+        this.name = name;
+        this.language = language;
+        this.published = published;
+        this.pages = pages;
+        this.authorId = authorId;
+        this.genreId = genreId;
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -125,6 +95,18 @@ public class Book implements Parcelable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public static final Creator<BookApiModel> CREATOR = new Creator<BookApiModel>() {
+        @Override
+        public BookApiModel createFromParcel(Parcel in) {
+            return new BookApiModel(in);
+        }
+
+        @Override
+        public BookApiModel[] newArray(int size) {
+            return new BookApiModel[size];
+        }
+    };
 
     @Override
     public int describeContents() {

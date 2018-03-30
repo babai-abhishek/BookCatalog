@@ -19,7 +19,7 @@ import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
 import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;

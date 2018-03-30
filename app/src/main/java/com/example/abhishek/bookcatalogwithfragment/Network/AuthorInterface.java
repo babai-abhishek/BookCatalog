@@ -1,9 +1,7 @@
 package com.example.abhishek.bookcatalogwithfragment.Network;
 
 
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.Author;
 import com.example.abhishek.bookcatalogwithfragment.models.api.AuthorApiModel;
-import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
 
 import java.util.List;
 

@@ -22,8 +22,8 @@ import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.BookAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBookImageUrls;
+import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBookImageUrls;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;

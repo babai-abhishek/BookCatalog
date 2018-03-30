@@ -16,6 +16,12 @@ public class GenreBusinessModel implements Parcelable {
 
     public GenreBusinessModel() {
     }
+
+    public GenreBusinessModel(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+
     public GenreBusinessModel(GenreApiModel apiModel) {
         this.id=apiModel.getId();
         this.name=apiModel.getName();
