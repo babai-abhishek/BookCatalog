@@ -20,9 +20,11 @@ import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
 public class MainActivity extends AppCompatActivity implements
         OptionsFragment.OptionsFragmentInteractionListener,
@@ -114,9 +116,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onGenreSelected(String genreName, String genreId) {
+    public void onGenreSelected(GenreBusinessModel genre) {
         manager.beginTransaction()
-                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genreName, genreId), TAG_FRAGMENT_GENRE_EDIT)
+                .replace(R.id.flFragmentContainer, GenreEditFragment.getInstance(genre), TAG_FRAGMENT_GENRE_EDIT)
                 .addToBackStack(TAG_FRAGMENT_GENRE_EDIT)
                 .commit();
     }
@@ -164,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements
     }*/
 
     @Override
-    public void onParticularGenreSelected(Genre genre) {
+    public void onParticularGenreSelected(GenreBusinessModel genre) {
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, BookListFragment.newInstanceForGenre(genre.getId()), TAG_FRAGMENT_BOOK_LIST)
                 .addToBackStack(TAG_FRAGMENT_BOOK_LIST)
@@ -172,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onParticularAuthorSelected(Author author) {
+    public void onParticularAuthorSelected(AuthorBusinessModel author) {
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, BookListFragment.newInstanceForAuthor(author.getId()), TAG_FRAGMENT_BOOK_LIST)
                 .addToBackStack(TAG_FRAGMENT_BOOK_LIST)
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onEditClicked(DummyBook book, Genre genre, Author author) {
+    public void onEditClicked(DummyBook book, GenreBusinessModel genre, AuthorBusinessModel author) {
         manager.beginTransaction()
                 .replace(R.id.flFragmentContainer, BookEditFragment.newInstance(book, genre, author), TAG_FRAGMENT_BOOK_EDIT)
                 .addToBackStack(TAG_FRAGMENT_BOOK_EDIT)

@@ -1,4 +1,4 @@
-package com.example.abhishek.bookcatalogwithfragment.Model;
+package com.example.abhishek.bookcatalogwithfragment.Model.ApiModel;
 
 import java.util.ArrayList;
 

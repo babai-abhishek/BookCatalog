@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.models.api.AuthorApiModel;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -120,18 +120,18 @@ public class AuthorEditFragment extends Fragment {
     }
 
     private void updateAuthor() {
-        Call<Author> call = authorService.updateAuthorEntry
-                (authId, new Author(etEditAuthName.getText().toString(), etEditAuthLang.getText().toString(), etEditAuthCountry.getText().toString()));
-        call.enqueue(new Callback<Author>() {
+        Call<AuthorApiModel> call = authorService.updateAuthorEntry
+                (authId, new AuthorApiModel(null, etEditAuthName.getText().toString(), etEditAuthLang.getText().toString(), etEditAuthCountry.getText().toString()));
+        call.enqueue(new Callback<AuthorApiModel>() {
             @Override
-            public void onResponse(Call<Author> call, Response<Author> response) {
+            public void onResponse(Call<AuthorApiModel> call, Response<AuthorApiModel> response) {
                 //Log.e(TAG,response.body().getName());
                 Toast.makeText(getActivity(), "Sucessfully updated with new name "+response.body().getName(),Toast.LENGTH_SHORT).show();
                 getActivity().onBackPressed();
             }
 
             @Override
-            public void onFailure(Call<Author> call, Throwable t) {
+            public void onFailure(Call<AuthorApiModel> call, Throwable t) {
                 Log.e("#",t.toString());
             }
         });

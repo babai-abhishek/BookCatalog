@@ -17,24 +17,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.AuthorAdapter;
-import com.example.abhishek.bookcatalogwithfragment.Adapters.GenreAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.ListItemClickListener;
-import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
-import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.dao.AuthorDao;
+import com.example.abhishek.bookcatalogwithfragment.models.api.AuthorApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +49,7 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
     private AuthorListFragmentInteractionListener listener;
     private AuthorFabButtonClickListener authorFabButtonClickListener;
     boolean shownAsDialog = false;
-    private Author selectedAuthor;
+    private AuthorBusinessModel selectedAuthor;
     private RecyclerView recyclerView;
     FloatingActionButton fabAddAuthor;
 
@@ -79,7 +74,7 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
     AuthorInterface authorService = ApiClient.getClient().create(AuthorInterface.class);
     private boolean isAuthorLoaded = false;
 
-    List<Author> authors = new ArrayList<>();
+    List<AuthorBusinessModel> authors = new ArrayList<>();
     AuthorAdapter adapter;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -89,7 +84,9 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
             switch (intent.getAction()) {
                 case ACTION_AUTHOR_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
-                    authors = Arrays.asList((Author[]) intent.getParcelableArrayExtra(KEY_AUTHORS));
+                    authors = Arrays.asList((AuthorBusinessModel[]) intent.getParcelableArrayExtra(KEY_AUTHORS));
+                    AuthorDao.save(authors);
+                    authors = AuthorDao.getAll();
                     if(!shownAsDialog){
                         adapter.setAuthorList(authors);
                     }else {
@@ -220,7 +217,7 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
 
     @Override
     public void onAction(int position, int action) {
-        Author author = authors.get(position);
+        AuthorBusinessModel author = authors.get(position);
 
         switch (action) {
 
@@ -253,17 +250,23 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
         isAuthorLoaded = false;
         showLoading();
 
-        Call<List<Author>> call = authorService.getAllAuthors();
-        call.enqueue(new Callback<List<Author>>() {
+        Call<List<AuthorApiModel>> call = authorService.getAllAuthors();
+        call.enqueue(new Callback<List<AuthorApiModel>>() {
             @Override
-            public void onResponse(Call<List<Author>> call, Response<List<Author>> response) {
-                Intent intent = new Intent(ACTION_AUTHOR_LIST_API_SUCCESS);
-                intent.putExtra(KEY_AUTHORS, response.body().toArray(new Author[0]));
-                broadcastManager.sendBroadcast(intent);
+            public void onResponse(Call<List<AuthorApiModel>> call, Response<List<AuthorApiModel>> response) {
+                if(response.isSuccessful()) {
+                    List<AuthorBusinessModel> authorBusinessModels = new ArrayList<>();
+                    for (AuthorApiModel apiModel : response.body()) {
+                        authorBusinessModels.add(new AuthorBusinessModel(apiModel));
+                    }
+                    Intent intent = new Intent(ACTION_AUTHOR_LIST_API_SUCCESS);
+                    intent.putExtra(KEY_AUTHORS,authorBusinessModels.toArray(new AuthorBusinessModel[0]));
+                    broadcastManager.sendBroadcast(intent);
+                }
             }
 
             @Override
-            public void onFailure(Call<List<Author>> call, Throwable t) {
+            public void onFailure(Call<List<AuthorApiModel>> call, Throwable t) {
                 //  Log.e(TAG, t.toString());
                 Intent intent = new Intent(ACTION_AUTHOR_LIST_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
@@ -305,7 +308,7 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
 
         switch (requestCode) {
             case REQUEST_CODE_ADD_AUTHOR:
-                selectedAuthor = (Author) data.getParcelableExtra("author");
+                selectedAuthor = (AuthorBusinessModel) data.getParcelableExtra("author");
                 dispatchSelectedAuthor();
                 break;
             default:
@@ -314,7 +317,7 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
     }
 
     @Override
-    public void onSelect(Author author) {
+    public void onSelect(AuthorBusinessModel author) {
         selectedAuthor = author;
         dispatchSelectedAuthor();
     }

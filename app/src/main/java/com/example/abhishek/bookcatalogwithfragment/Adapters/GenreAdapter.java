@@ -9,9 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_EMPTY = 1;
 
-    private List<Genre> genreList;
+    private List<GenreBusinessModel> genreList;
     private String TAG = "#";
 
     private boolean isLoading=false;
@@ -44,17 +43,17 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private ListItemClickListener listItemClickListener;
     private SelectFromDialog selectFromDialog;
 
-    public GenreAdapter(List<Genre> list, ListItemClickListener listItemClickListener) {
+    public GenreAdapter(List<GenreBusinessModel> list, ListItemClickListener listItemClickListener) {
         this.genreList = list;
         this.listItemClickListener = listItemClickListener;
     }
-    public GenreAdapter(List<Genre> list, SelectFromDialog selectFromDialog) {
+    public GenreAdapter(List<GenreBusinessModel> list, SelectFromDialog selectFromDialog) {
         this.genreList = list;
         this.selectFromDialog = selectFromDialog;
     }
 
     public interface SelectFromDialog {
-        void onSelect(Genre genre);
+        void onSelect(GenreBusinessModel genre);
     }
 
     @Override
@@ -87,7 +86,7 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         } else {
             GenreViewHolder holder = (GenreViewHolder) rvHolder;
-            final Genre genre = genreList.get(position);
+            final GenreBusinessModel genre = genreList.get(position);
             holder.bind(genre);
             holder.btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -129,12 +128,12 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return genreSize < 1 || isLoading() ? 1 : genreSize;
     }
 
-    public void setGenreList(List<Genre> genres) {
+    public void setGenreList(List<GenreBusinessModel> genres) {
         this.genreList = genres;
         notifyDataSetChanged();
     }
 
-    public void setGenreListForDialog(List<Genre> genres) {
+    public void setGenreListForDialog(List<GenreBusinessModel> genres) {
         this.genreList = genres;
         notifyDataSetChanged();
         shownAsDialog = true;
@@ -165,7 +164,7 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
         }
 
-        void bind(final Genre genre) {
+        void bind(final GenreBusinessModel genre) {
             genreNameTextView.setText(genre.getName());
             genreIdTextView.setText(genre.getId());
         }

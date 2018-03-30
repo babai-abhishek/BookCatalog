@@ -9,9 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Author> authorList;
+    private List<AuthorBusinessModel> authorList;
     public static final int ACTION_EDIT = 0;
     public static final int ACTION_DELETE = 1;
     private boolean shownAsDialog = false;
@@ -45,18 +44,18 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return isLoading;
     }
 
-    public AuthorAdapter(List<Author> authorListlist, ListItemClickListener listItemClickListener) {
-        this.authorList = authorListlist;
-        this.listItemClickListener = listItemClickListener;
+    public AuthorAdapter(List<AuthorBusinessModel> list, SelectFromDialog listItemClickListener) {
+        this.authorList = list;
+        this.selectFromDialog = listItemClickListener;
     }
 
-    public AuthorAdapter(List<Author> list, AuthorAdapter.SelectFromDialog selectFromDialog) {
+    public AuthorAdapter(List<AuthorBusinessModel> list, ListItemClickListener selectFromDialog) {
         this.authorList = list;
-        this.selectFromDialog = selectFromDialog;
+        this.listItemClickListener = selectFromDialog;
     }
 
     public interface SelectFromDialog {
-        void onSelect(Author author);
+        void onSelect(AuthorBusinessModel author);
     }
 
 
@@ -97,7 +96,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((EmptyListViewHolder) holder).emptyListMessage.setText(isLoading() ? "Loading...." : "No items found!");
         } else {
             AuthorViewHolder authorViewHolder = (AuthorViewHolder) holder;
-            final Author author = authorList.get(position);
+            final AuthorBusinessModel author = authorList.get(position);
             authorViewHolder.bind(author);
             authorViewHolder.btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -128,12 +127,12 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return authorListSize < 1 || isLoading() ? 1 : authorListSize;
     }
 
-    public void setAuthorList(List<Author> authorList) {
+    public void setAuthorList(List<AuthorBusinessModel> authorList) {
         this.authorList = authorList;
         notifyDataSetChanged();
     }
 
-    public void setAuthorListForDialog(List<Author> authors) {
+    public void setAuthorListForDialog(List<AuthorBusinessModel> authors) {
         this.authorList = authors;
         notifyDataSetChanged();
         shownAsDialog = true;
@@ -175,7 +174,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         }
 
-        void bind(final Author author) {
+        void bind(final AuthorBusinessModel author) {
             tv_auth_name.setText(author.getName());
             tv_auth_id.setText(author.getId());
             tv_auth_language.setText(author.getLanguage());

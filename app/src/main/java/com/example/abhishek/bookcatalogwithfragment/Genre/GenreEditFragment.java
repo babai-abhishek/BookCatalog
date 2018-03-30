@@ -10,15 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.models.api.GenreApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,11 +36,11 @@ public class GenreEditFragment extends Fragment {
     private String genreName, genreID;
     EditText etGenreName;
 
-    public static GenreEditFragment getInstance(String genreName, String genreId){
+    public static GenreEditFragment getInstance(GenreBusinessModel genre){
         GenreEditFragment fragment = new GenreEditFragment();
         Bundle args = new Bundle();
-        args.putString(ARGS_GENRE_NAME, genreName);
-        args.putString(ARGS_GENRE_ID, genreId);
+        args.putString(ARGS_GENRE_NAME, genre.getName());
+        args.putString(ARGS_GENRE_ID, genre.getId());
         fragment.setArguments(args);
         return  fragment;
     }
@@ -108,16 +107,16 @@ public class GenreEditFragment extends Fragment {
 
     public void updateGenre(){
 
-        Call<Genre> call = genreService.updateGenreEntry(genreID,new Genre(etGenreName.getText().toString()));
-        call.enqueue(new Callback<Genre>() {
+        Call<GenreApiModel> call = genreService.updateGenreEntry(genreID,new GenreApiModel(null,etGenreName.getText().toString()));
+        call.enqueue(new Callback<GenreApiModel>() {
             @Override
-            public void onResponse(Call<Genre> call, Response<Genre> response) {
+            public void onResponse(Call<GenreApiModel> call, Response<GenreApiModel> response) {
                 Toast.makeText(getActivity(), "Sucessfully updated with new name "+response.body().getName(),Toast.LENGTH_SHORT).show();
                 getActivity().onBackPressed();
             }
 
             @Override
-            public void onFailure(Call<Genre> call, Throwable t) {
+            public void onFailure(Call<GenreApiModel> call, Throwable t) {
                 // Log.e(TAG,t.toString());
             }
         });

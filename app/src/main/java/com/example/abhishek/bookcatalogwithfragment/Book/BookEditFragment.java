@@ -17,13 +17,15 @@ import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Book;
-import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,8 +41,8 @@ public class BookEditFragment extends Fragment {
 
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
 
-    Author selectedAuthor = new Author();
-    Genre selectedGenre = new Genre();
+    AuthorBusinessModel selectedAuthor = new AuthorBusinessModel();
+    GenreBusinessModel selectedGenre = new GenreBusinessModel();
     //Book selectedBook = new Book();
     DummyBook selectedBook = new DummyBook();
 
@@ -48,7 +50,7 @@ public class BookEditFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static BookEditFragment newInstance(DummyBook book, Genre genre, Author author) {
+    public static BookEditFragment newInstance(DummyBook book, GenreBusinessModel genre, AuthorBusinessModel author) {
         BookEditFragment fragment = new BookEditFragment();
         Bundle args = new Bundle();
         args.putParcelable("genre", genre);

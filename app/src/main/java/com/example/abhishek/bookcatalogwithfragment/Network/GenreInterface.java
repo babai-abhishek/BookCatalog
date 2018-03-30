@@ -1,7 +1,7 @@
 package com.example.abhishek.bookcatalogwithfragment.Network;
 
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
+import com.example.abhishek.bookcatalogwithfragment.models.api.GenreApiModel;
 
 import java.util.List;
 
@@ -20,17 +20,17 @@ import retrofit2.http.Path;
 
 public interface GenreInterface {
     @GET("/genres")
-    Call<List<Genre>> getAllGenres();
+    Call<List<GenreApiModel>> getAllGenres();
 
     @GET("/genres/{id}")
-    Call<Genre> getGenre(@Path("id") String id);
+    Call<GenreApiModel> getGenre(@Path("id") String id);
 
     @POST("/genres")
-    Call<Genre> newGenreEntry(@Body Genre genre);
+    Call<GenreApiModel> newGenreEntry(@Body GenreApiModel genre);
 
     @DELETE("/genres/{id}")
     Call<ResponseBody> deleteGenreEntry(@Path("id") String id);
 
     @PUT("/genres/{id}")
-    Call<Genre> updateGenreEntry(@Path("id") String id, @Body Genre genre);
+    Call<GenreApiModel> updateGenreEntry(@Path("id") String id, @Body GenreApiModel genre);
 }

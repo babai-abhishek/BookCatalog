@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 
 import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.R;
 import com.squareup.picasso.Picasso;
 

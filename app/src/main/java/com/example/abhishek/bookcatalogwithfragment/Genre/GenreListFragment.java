@@ -17,23 +17,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.GenreAdapter;
 import com.example.abhishek.bookcatalogwithfragment.Adapters.ListItemClickListener;
-import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
+import com.example.abhishek.bookcatalogwithfragment.dao.GenreDao;
+import com.example.abhishek.bookcatalogwithfragment.models.api.GenreApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +48,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
 
     private GenreListFragmentInteractionListener listener;
     private GenreFabuttonClickListener fabuttonClickListener;
-    private Genre selectedGenre;
+    private GenreBusinessModel selectedGenre;
     boolean shownAsDialog = false;
     private static final String TAG_FRAGMENT_GENRE_ADD ="GenreAddFragment";
 
@@ -70,11 +66,10 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
     private RecyclerView recyclerView;
     private FloatingActionButton fabAddGenre;
 
-    List<Genre> genres = new ArrayList<>();
+    List<GenreBusinessModel> genres = new ArrayList<>();
     GenreAdapter adapter;
 
     private boolean isGenreLoaded = false;
-
     GenreInterface genreService = ApiClient.getClient().create(GenreInterface.class);
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -86,7 +81,9 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
                 //action taken on sucessful genre list loading
                 case ACTION_GENRE_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
-                    genres = Arrays.asList((Genre[]) intent.getParcelableArrayExtra(KEY_GENRES));
+                    genres = Arrays.asList((GenreBusinessModel[]) intent.getParcelableArrayExtra(KEY_GENRES));
+                    GenreDao.save(genres);
+                    genres = GenreDao.getAll();
                     if(!shownAsDialog){
                         adapter.setGenreList(genres);
                     }else {
@@ -185,8 +182,6 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
         return v;
     }
 
-
-
     @Override
     public int show(FragmentTransaction transaction, String tag) {
         int ret = super.show(transaction, tag);
@@ -197,20 +192,19 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
     }
 
     @Override
-    public void onSelect(Genre genre) {
+    public void onSelect(GenreBusinessModel genre) {
         Toast.makeText(getActivity(),"selected genre : "+genre.getName(),Toast.LENGTH_SHORT).show();
         selectedGenre = genre;
         dispatchSelectedGenre();
     }
 
     public interface GenreListFragmentInteractionListener {
-        void onGenreSelected(String genreName, String genreId);
+        void onGenreSelected(GenreBusinessModel genre);
     }
 
     public interface GenreFabuttonClickListener {
         void onGenreFabClick();
     }
-
 
     @Override
     public void onResume() {
@@ -243,19 +237,23 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
         isGenreLoaded = false;
         showLoading();
 
-        Call<List<Genre>> call = genreService.getAllGenres();
-        call.enqueue(new Callback<List<Genre>>() {
+        Call<List<GenreApiModel>> call = genreService.getAllGenres();
+        call.enqueue(new Callback<List<GenreApiModel>>() {
             @Override
-            public void onResponse(Call<List<Genre>> call, Response<List<Genre>> response) {
+            public void onResponse(Call<List<GenreApiModel>> call, Response<List<GenreApiModel>> response) {
                 if (response.isSuccessful()) { //if(response.code()>=200 && response.code()<300)
+                    List<GenreBusinessModel> genres = new ArrayList<>();
+                    for(GenreApiModel apiModel:response.body()){
+                        genres.add(new GenreBusinessModel(apiModel));
+                    }
                     Intent intent = new Intent(ACTION_GENRE_LIST_API_SUCCESS);
-                    intent.putExtra(KEY_GENRES, response.body().toArray(new Genre[0]));
+                    intent.putExtra(KEY_GENRES, genres.toArray(new GenreBusinessModel[0]));
                     broadcastManager.sendBroadcast(intent);
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Genre>> call, Throwable t) {
+            public void onFailure(Call<List<GenreApiModel>> call, Throwable t) {
                 // Log.e(TAG, t.toString());
                 Intent intent = new Intent(ACTION_GENRE_LIST_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
@@ -271,7 +269,7 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
 
         switch (requestCode) {
             case REQUEST_CODE_ADD_GENRE:
-                selectedGenre = (Genre) data.getParcelableExtra("genre");
+                selectedGenre = (GenreBusinessModel) data.getParcelableExtra("genre");
                 dispatchSelectedGenre();
                 break;
             default:
@@ -308,11 +306,11 @@ public class GenreListFragment extends DialogFragment implements ListItemClickLi
     @Override
     public void onAction(int position, int action) {
 
-        Genre g = genres.get(position);
+        GenreBusinessModel g = genres.get(position);
         switch (action) {
             case GenreAdapter.ACTION_EDIT:
                 shouldReloadOnResume = true;
-                listener.onGenreSelected(g.getName(), g.getId());
+                listener.onGenreSelected(g);
                 break;
 
             case GenreAdapter.ACTION_DELETE:

@@ -3,7 +3,6 @@ package com.example.abhishek.bookcatalogwithfragment.Genre;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,24 +10,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.GenreInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
 import com.example.abhishek.bookcatalogwithfragment.Util.KeyBoardManager;
+import com.example.abhishek.bookcatalogwithfragment.models.api.GenreApiModel;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -96,11 +89,11 @@ public class GenreAddFragment extends DialogFragment {
     }
 
     public void addNewGenre(){
-        Call<Genre> call = genreService.newGenreEntry(new Genre(et_add_new_genre.getText().toString()));
-        call.enqueue(new Callback<Genre>() {
+        Call<GenreApiModel> call = genreService.newGenreEntry(new GenreApiModel(null, et_add_new_genre.getText().toString()));
+        call.enqueue(new Callback<GenreApiModel>() {
             @Override
-            public void onResponse(Call<Genre> call, Response<Genre> response) {
-                Genre genre = response.body();
+            public void onResponse(Call<GenreApiModel> call, Response<GenreApiModel> response) {
+                GenreApiModel genre = response.body();
                 Toast.makeText(getActivity(), "ID of new genre is"+genre.getId(), Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(AddNewGenreActivity.this,GenreActivity.class));
                // getActivity().onBackPressed();
@@ -118,7 +111,7 @@ public class GenreAddFragment extends DialogFragment {
             }
 
             @Override
-            public void onFailure(Call<Genre> call, Throwable t) {
+            public void onFailure(Call<GenreApiModel> call, Throwable t) {
                 //Log.e(TAG,t.toString());
             }
         });

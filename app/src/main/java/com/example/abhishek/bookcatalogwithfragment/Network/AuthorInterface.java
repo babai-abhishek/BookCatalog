@@ -1,7 +1,9 @@
 package com.example.abhishek.bookcatalogwithfragment.Network;
 
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.Author;
+import com.example.abhishek.bookcatalogwithfragment.models.api.AuthorApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
 
 import java.util.List;
 
@@ -21,17 +23,17 @@ import retrofit2.http.Path;
 public interface AuthorInterface {
 
     @GET("/authors")
-    Call<List<Author>> getAllAuthors();
+    Call<List<AuthorApiModel>> getAllAuthors();
 
     @GET("/authors/{id}")
-    Call<Author> getAuthor(@Path("id") String id);
+    Call<AuthorApiModel> getAuthor(@Path("id") String id);
 
     @POST("/authors")
-    Call<Author> newAuthorEntry(@Body Author author);
+    Call<AuthorApiModel> newAuthorEntry(@Body AuthorApiModel author);
 
     @DELETE("/authors/{id}")
     Call<ResponseBody> deleteAuthorEntry(@Path("id") String id);
 
     @PUT("/authors/{id}")
-    Call<Author> updateAuthorEntry(@Path("id") String id, @Body Author author);
+    Call<AuthorApiModel> updateAuthorEntry(@Path("id") String id, @Body AuthorApiModel author);
 }

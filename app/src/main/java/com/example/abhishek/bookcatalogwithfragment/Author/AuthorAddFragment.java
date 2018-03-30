@@ -12,9 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,13 +19,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Book.BookAddFragment;
-import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
 import com.example.abhishek.bookcatalogwithfragment.Util.KeyBoardManager;
+import com.example.abhishek.bookcatalogwithfragment.models.api.AuthorApiModel;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -99,14 +94,14 @@ public class AuthorAddFragment extends DialogFragment {
 
     private void addNewAuthor() {
 
-        Call<Author> call = authorService.newAuthorEntry(new Author(et_new_auth_name.getText().toString(),
+        Call<AuthorApiModel> call = authorService.newAuthorEntry(new AuthorApiModel(null, et_new_auth_name.getText().toString(),
                 et_new_auth_language.getText().toString(),
                 et_new_auth_country.getText().toString()));
 
-        call.enqueue(new Callback<Author>() {
+        call.enqueue(new Callback<AuthorApiModel>() {
             @Override
-            public void onResponse(Call<Author> call, Response<Author> response) {
-                Author author = response.body();
+            public void onResponse(Call<AuthorApiModel> call, Response<AuthorApiModel> response) {
+                AuthorApiModel author = response.body();
                 //Log.d("#"," id of new book received "+ author.getId());
                 Toast.makeText(getActivity(), "ID of new author is"+author.getId(), Toast.LENGTH_SHORT).show();
                // getActivity().onBackPressed();
@@ -123,7 +118,7 @@ public class AuthorAddFragment extends DialogFragment {
             }
 
             @Override
-            public void onFailure(Call<Author> call, Throwable t) {
+            public void onFailure(Call<AuthorApiModel> call, Throwable t) {
                 Log.e("#",t.toString());
             }
         });

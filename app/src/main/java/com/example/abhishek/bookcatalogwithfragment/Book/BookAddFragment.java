@@ -3,7 +3,6 @@ package com.example.abhishek.bookcatalogwithfragment.Book;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,9 +23,9 @@ import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Book;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;

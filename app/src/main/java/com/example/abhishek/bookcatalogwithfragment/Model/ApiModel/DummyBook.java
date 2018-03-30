@@ -1,7 +1,9 @@
-package com.example.abhishek.bookcatalogwithfragment.Model;
+package com.example.abhishek.bookcatalogwithfragment.Model.ApiModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.Book;
 
 import java.io.Serializable;
 

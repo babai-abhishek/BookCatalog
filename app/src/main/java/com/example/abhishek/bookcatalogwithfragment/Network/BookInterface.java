@@ -1,7 +1,7 @@
 package com.example.abhishek.bookcatalogwithfragment.Network;
 
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.Book;
 
 import java.util.List;
 

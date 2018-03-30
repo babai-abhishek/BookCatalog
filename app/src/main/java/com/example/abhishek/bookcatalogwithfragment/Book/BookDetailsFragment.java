@@ -21,10 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.abhishek.bookcatalogwithfragment.Model.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.Book;
-import com.example.abhishek.bookcatalogwithfragment.Model.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.Genre;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.DummyBook;
+import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
