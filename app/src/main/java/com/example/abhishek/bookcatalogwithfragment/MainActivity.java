@@ -20,9 +20,7 @@ import com.example.abhishek.bookcatalogwithfragment.Book.BookListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreAddFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreEditFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
 import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
 import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
@@ -70,24 +68,8 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.flFragmentContainer, new OptionsFragment(),TAG_FRAGMENT_OPTIONS);
         transaction.commit();
-       /* }
-        else {
-            if(restoreGenreFragment=savedInstanceState.getBoolean(KEY_RESTORE_GENRE_LIST_FRAGMENT)){
-                genreListFragment = (GenreListFragment) manager.findFragmentByTag(TAG_FRAGMENT_GENRE_LIST);
-            }
-            else {
-                optionsFragment = (OptionsFragment) manager.findFragmentByTag(TAG_FRAGMENT_OPTIONS);
-            }
-        }*/
 
     }
-
-  /*  @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_RESTORE_GENRE_LIST_FRAGMENT,restoreGenreFragment);
-    }
-*/
 
     @Override
     public void onGenreClicked(Fragment fragment) {

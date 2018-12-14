@@ -18,7 +18,7 @@ public class GenreApiModel implements Parcelable{
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("_id")
+    @SerializedName("id")
     @Expose
     @PrimaryKey
     private String id;

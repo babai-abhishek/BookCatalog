@@ -20,6 +20,7 @@ public class BookApiModel implements Parcelable {
     public BookApiModel() {
     }
 
+
     protected BookApiModel(Parcel in) {
         name = in.readString();
         language = in.readString();

@@ -24,8 +24,8 @@ public class AuthorDao {
                     authorDbModel = realm.where(AuthorDbModel.class).equalTo(AuthorDbModel.FIELD_ID,
                             authorBusinessModel.getId()).findFirst();
                     if(authorDbModel==null){
-                        authorDbModel = realm.createObject(AuthorDbModel.class);
-                        authorDbModel.setId(authorBusinessModel.getId());
+                        authorDbModel = realm.createObject(AuthorDbModel.class, authorBusinessModel.getId());
+//                        authorDbModel.setId(authorBusinessModel.getId());
                     }
                     authorDbModel.setName(authorBusinessModel.getName());
                     authorDbModel.setCountry(authorBusinessModel.getCountry());

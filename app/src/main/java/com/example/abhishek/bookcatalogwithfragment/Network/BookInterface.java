@@ -1,7 +1,6 @@
 package com.example.abhishek.bookcatalogwithfragment.Network;
 
-
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.models.api.BookApiModel;
 
 import java.util.List;
 
@@ -21,24 +20,24 @@ import retrofit2.http.Path;
 public interface BookInterface {
 
     @GET("/books")
-    Call<List<Book>> getAllBooks();
+    Call<List<BookApiModel>> getAllBooks();
 
     @GET("/books/{id}")
-    Call<Book> getBook(@Path("id") String id);
+    Call<BookApiModel> getBook(@Path("id") String id);
 
     @GET("/books/genre/{genreId}")
-    Call<List<Book>> getBooksByGenreId(@Path("genreId") String genreId);
+    Call<List<BookApiModel>> getBooksByGenreId(@Path("genreId") String genreId);
 
     @GET("/books/author/{authorId}")
-    Call<List<Book>> getBooksByAuthorId(@Path("authorId") String authorId);
+    Call<List<BookApiModel>> getBooksByAuthorId(@Path("authorId") String authorId);
 
     @POST("/books")
-    Call<Book> newBookEntry(@Body Book book);
+    Call<BookApiModel> newBookEntry(@Body BookApiModel book);
 
     @DELETE("/books/{id}")
     Call<ResponseBody> deleteBookEntry(@Path("id") String id);
 
     @PUT("/books/{id}")
-    Call<Book> updateBookEntry(@Path("id") String id, @Body Book book);
+    Call<BookApiModel> updateBookEntry(@Path("id") String id, @Body BookApiModel book);
 
 }

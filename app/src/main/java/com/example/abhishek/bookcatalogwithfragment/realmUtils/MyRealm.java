@@ -1,4 +1,4 @@
-package com.example.abhishek.bookcatalogwithfragment.LocalDB;
+package com.example.abhishek.bookcatalogwithfragment.realmUtils;
 
 import android.app.Application;
 
@@ -16,7 +16,7 @@ public class MyRealm extends Application {
         // The default Realm file is "default.realm" in Context.getFilesDir();
         // we'll change it to "myrealm.realm"
         Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder().name("myrealm.realm").build();
+        RealmConfiguration config = new RealmConfiguration.Builder().name("catalog.realm").build();
         Realm.setDefaultConfiguration(config);
     }
 }

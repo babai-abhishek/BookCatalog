@@ -20,11 +20,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.models.api.AuthorApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.api.BookApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.api.GenreApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.BookBusinessModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.AuthorInterface;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
@@ -62,8 +64,8 @@ public class BookDetailsFragment extends Fragment {
 
   //  Book book;
     DummyBook book;
-    Author author;
-    Genre genre;
+    AuthorBusinessModel author;
+    GenreBusinessModel genre;
 
     GetAllBooksOfParticularGenre getAllBooksOfParticularGenre;
     GetAllBooksOfParticularAuthor getAllBooksOfParticularAuthor;
@@ -123,17 +125,9 @@ public class BookDetailsFragment extends Fragment {
                     postLoad();
                     break;
                 case ACTION_RELOAD_BOOK_LIST_API_SUCCESS:
-                    Book extra = intent.getParcelableExtra(BOOK_KEY_FOR_BROADCASTRECEIVER);
+                    BookBusinessModel extra = intent.getParcelableExtra(BOOK_KEY_FOR_BROADCASTRECEIVER);
                     book.setBook(extra);
                     book.setImageUrl(dummyImgUrl);
-                    /*tvBookName.setText(book.getBook().getName());
-                    tvBookId.setText(book.getBook().getId());
-                    tvBookLanguage.setText(book.getBook().getLanguage());
-                    tvBookPublishDate.setText(book.getBook().getPublished());
-                    tvBookNoOfPages.setText(String.valueOf(book.getBook().getPages()));
-                    isBookLoaded = true;
-                    loadAuthorName(book.getBook().getAuthorId());
-                    loadGenreType(book.getBook().getGenreId());*/
                     isBookLoaded = true;
                     setDataToViews(book);
                     break;
@@ -154,7 +148,7 @@ public class BookDetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static BookDetailsFragment getInstance(Book book) {
+    public static BookDetailsFragment getInstance(BookBusinessModel book) {
         BookDetailsFragment fragment = new BookDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARGS_SELECTED_BOOK, book);
@@ -165,7 +159,9 @@ public class BookDetailsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof GetAllBooksOfParticularAuthor && context instanceof GetAllBooksOfParticularGenre && context instanceof BookDetailsEditButtonClickListener) {
+        if (context instanceof GetAllBooksOfParticularAuthor &&
+                context instanceof GetAllBooksOfParticularGenre &&
+                context instanceof BookDetailsEditButtonClickListener) {
             getAllBooksOfParticularAuthor = (GetAllBooksOfParticularAuthor) context;
             getAllBooksOfParticularGenre = (GetAllBooksOfParticularGenre) context;
             bookDetailsEditButtonClickListener = (BookDetailsEditButtonClickListener) context;
@@ -279,7 +275,7 @@ public class BookDetailsFragment extends Fragment {
                 shouldReload = true;
                 dummyImgUrl = book.getImageUrl();
                 if (genre == null) {
-                    bookDetailsEditButtonClickListener.onEditClicked(book, new Genre(), author);
+                    bookDetailsEditButtonClickListener.onEditClicked(book, new GenreBusinessModel(), author);
                 } else
                     bookDetailsEditButtonClickListener.onEditClicked(book, genre, author);
             }
@@ -297,20 +293,20 @@ public class BookDetailsFragment extends Fragment {
         tvBookPublishDate.setText("Date of publish : "+book.getBook().getPublished());
         tvBookNoOfPages.setText("Pages : "+String.valueOf(book.getBook().getPages()));
 
-        loadGenreType(book.getBook().getGenreId());
-        loadAuthorName(book.getBook().getAuthorId());
+        loadGenreType(book.getBook().getGenre().getId());
+        loadAuthorName(book.getBook().getAuthor().getId());
     }
 
     public interface BookDetailsEditButtonClickListener {
-        void onEditClicked(DummyBook book, Genre genre, Author author);
+        void onEditClicked(DummyBook book, GenreBusinessModel genre, AuthorBusinessModel author);
     }
 
     public interface GetAllBooksOfParticularGenre {
-        void onParticularGenreSelected(Genre genre);
+        void onParticularGenreSelected(GenreBusinessModel genre);
     }
 
     public interface GetAllBooksOfParticularAuthor {
-        void onParticularAuthorSelected(Author author);
+        void onParticularAuthorSelected(AuthorBusinessModel author);
     }
 
     @Override
@@ -341,18 +337,18 @@ public class BookDetailsFragment extends Fragment {
         isBookLoaded = false;
         showLoading();
 
-        Call<Book> call = bookService.getBook(id);
-        call.enqueue(new Callback<Book>() {
+        Call<BookApiModel> call = bookService.getBook(id);
+        call.enqueue(new Callback<BookApiModel>() {
             @Override
-            public void onResponse(Call<Book> call, Response<Book> response) {
-                Book b = response.body();
+            public void onResponse(Call<BookApiModel> call, Response<BookApiModel> response) {
+                BookApiModel b = response.body();
                 Intent intent = new Intent(ACTION_RELOAD_BOOK_LIST_API_SUCCESS);
-                intent.putExtra(BOOK_KEY_FOR_BROADCASTRECEIVER, b);
+                intent.putExtra(BOOK_KEY_FOR_BROADCASTRECEIVER, new BookBusinessModel(b));
                 broadcastManager.sendBroadcast(intent);
             }
 
             @Override
-            public void onFailure(Call<Book> call, Throwable t) {
+            public void onFailure(Call<BookApiModel> call, Throwable t) {
                 Intent intent = new Intent(ACTION_RELOAD_BOOK_LIST_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
             }
@@ -361,23 +357,23 @@ public class BookDetailsFragment extends Fragment {
         shouldReload = false;
     }
 
-    private void loadAuthorName(String authorId) {
+    private void loadAuthorName(final String authorId) {
 
         isAuthorLoaded = false;
         showLoading();
 
-        Call<Author> call = authorService.getAuthor(authorId);
-        call.enqueue(new Callback<Author>() {
+        Call<AuthorApiModel> call = authorService.getAuthor(authorId);
+        call.enqueue(new Callback<AuthorApiModel>() {
             @Override
-            public void onResponse(Call<Author> call, Response<Author> response) {
-                Author auth = response.body();
+            public void onResponse(Call<AuthorApiModel> call, Response<AuthorApiModel> response) {
+                AuthorApiModel auth = response.body();
                 Intent intent = new Intent(ACTION_AUTHOR_NAME_API_SUCCESS);
-                intent.putExtra(AUTHOR_KEY_FOR_BROADCASTRECEIVER, auth);
+                intent.putExtra(AUTHOR_KEY_FOR_BROADCASTRECEIVER, new AuthorBusinessModel(auth));
                 broadcastManager.sendBroadcast(intent);
             }
 
             @Override
-            public void onFailure(Call<Author> call, Throwable t) {
+            public void onFailure(Call<AuthorApiModel> call, Throwable t) {
                 Log.e("#", t.toString());
                 Intent intent = new Intent(ACTION_AUTHOR_NAME_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
@@ -391,18 +387,18 @@ public class BookDetailsFragment extends Fragment {
         isGenreLoaded = false;
         showLoading();
 
-        Call<Genre> call = genreService.getGenre(genreId);
-        call.enqueue(new Callback<Genre>() {
+        Call<GenreApiModel> call = genreService.getGenre(genreId);
+        call.enqueue(new Callback<GenreApiModel>() {
             @Override
-            public void onResponse(Call<Genre> call, Response<Genre> response) {
-                Genre gen = response.body();
+            public void onResponse(Call<GenreApiModel> call, Response<GenreApiModel> response) {
+                GenreApiModel gen = response.body();
                 Intent intent = new Intent(ACTION_GENRE_TYPE_API_SUCCESS);
-                intent.putExtra(GENRE_KEY_FOR_BROADCASTRECEIVER, gen);
+                intent.putExtra(GENRE_KEY_FOR_BROADCASTRECEIVER, new GenreBusinessModel(gen));
                 broadcastManager.sendBroadcast(intent);
             }
 
             @Override
-            public void onFailure(Call<Genre> call, Throwable t) {
+            public void onFailure(Call<GenreApiModel> call, Throwable t) {
                 Log.e("#", t.toString());
                 Intent intent = new Intent(ACTION_GENRE_TYPE_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);

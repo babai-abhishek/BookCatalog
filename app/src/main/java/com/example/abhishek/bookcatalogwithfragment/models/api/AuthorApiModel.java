@@ -21,7 +21,7 @@ public class AuthorApiModel implements Parcelable{
     @SerializedName("country")
     @Expose
     private String country;
-    @SerializedName("_id")
+    @SerializedName("id")
     @Expose
     private String id;
 

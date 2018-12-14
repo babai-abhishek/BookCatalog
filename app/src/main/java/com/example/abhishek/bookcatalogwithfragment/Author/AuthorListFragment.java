@@ -193,7 +193,6 @@ public class AuthorListFragment extends DialogFragment implements ListItemClickL
 
         return ret;
     }
-
     @Override
     public void onResume() {
         super.onResume();

@@ -21,7 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Adapters.BookAdapter;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.dao.BookDao;
+import com.example.abhishek.bookcatalogwithfragment.models.api.BookApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.BookBusinessModel;
 import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
 import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBookImageUrls;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
@@ -66,7 +68,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
     ArrayList<DummyBook> dummyBooks;
 
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
-    private List<Book> bookList;
+    private List<BookBusinessModel> bookList;
     private BookAdapter bookAdapter;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -75,7 +77,9 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
             switch (intent.getAction()) {
                 case ACTION_BOOK_LIST_API_SUCCESS:
                     Toast.makeText(getActivity(), "Api Success", Toast.LENGTH_SHORT).show();
-                    bookList = Arrays.asList((Book[]) intent.getParcelableArrayExtra(KEY_BOOK));
+                    bookList = Arrays.asList((BookBusinessModel[]) intent.getParcelableArrayExtra(KEY_BOOK));
+                    BookDao.save(bookList);
+                    bookList = BookDao.getAll();
                     for(int i=0 ; i<bookList.size() ; i++){
                         dummyBooks.add(new DummyBook(DummyBookImageUrls.getImageUrl(i), bookList.get(i)));
                     }
@@ -219,7 +223,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
         isBookLoaded = false;
         showLoading();
-        Call<List<Book>> call;
+        Call<List<BookApiModel>> call;
 
        /* if("author".equalsIgnoreCase(listType)){
             call = bookService.getBooksByAuthorId(filterId);
@@ -234,18 +238,25 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
                 : "genre".equalsIgnoreCase(listType)
                 ? bookService.getBooksByGenreId(filterId)
                 : bookService.getAllBooks();
-        call.enqueue(new Callback<List<Book>>() {
+        call.enqueue(new Callback<List<BookApiModel>>() {
             @Override
-            public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
+            public void onResponse(Call<List<BookApiModel>> call, Response<List<BookApiModel>> response) {
 
-                Intent intent = new Intent(ACTION_BOOK_LIST_API_SUCCESS);
-                intent.putExtra(KEY_BOOK, response.body().toArray(new Book[0]));
-                broadcastManager.sendBroadcast(intent);
+                if(response.isSuccessful()){
+                    List<BookBusinessModel> businessModels = new ArrayList<>();
+                    for(BookApiModel apiModel: response.body()){
+                        businessModels.add(new BookBusinessModel(apiModel));
+                    }
+                    Intent intent = new Intent(ACTION_BOOK_LIST_API_SUCCESS);
+                    intent.putExtra(KEY_BOOK, businessModels.toArray(new BookBusinessModel[0]));
+                    broadcastManager.sendBroadcast(intent);
+
+                }
 
             }
 
             @Override
-            public void onFailure(Call<List<Book>> call, Throwable t) {
+            public void onFailure(Call<List<BookApiModel>> call, Throwable t) {
                 Intent intent = new Intent(ACTION_BOOK_LIST_API_FAILURE);
                 broadcastManager.sendBroadcast(intent);
             }

@@ -17,10 +17,8 @@ import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
+import com.example.abhishek.bookcatalogwithfragment.models.api.BookApiModel;
 import com.example.abhishek.bookcatalogwithfragment.models.dummy.DummyBook;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
@@ -140,28 +138,28 @@ public class BookEditFragment extends Fragment {
 
     private void updateBook() {
 
-        Call<Book> call = bookService.updateBookEntry(selectedBook.getBook().getId(),
-                new Book(etBookName.getText().toString(),
+        Call<BookApiModel> call = bookService.updateBookEntry(selectedBook.getBook().getId(),
+                new BookApiModel(etBookName.getText().toString(),
                         etBookLang.getText().toString(),
                         etBookPublishDate.getText().toString(),
                         Integer.parseInt(etBookPages.getText().toString()),
                         selectedAuthor.getId(),
-                        selectedGenre.getId()));
-        call.enqueue(new Callback<Book>() {
+                        selectedGenre.getId(), null));
+        call.enqueue(new Callback<BookApiModel>() {
             @Override
-            public void onResponse(Call<Book> call, Response<Book> response) {
+            public void onResponse(Call<BookApiModel> call, Response<BookApiModel> response) {
                 //  Log.e(TAG,response.body().getName());
                 Toast.makeText(getActivity(), "Sucessfully updated with new name " + response.body().getName(), Toast.LENGTH_SHORT).show();
                 getActivity().onBackPressed();
             }
 
             @Override
-            public void onFailure(Call<Book> call, Throwable t) {
+            public void onFailure(Call<BookApiModel> call, Throwable t) {
                 Log.e("#", t.toString());
             }
         });
 
-    }
+   }
 
     private void setAuthor(String authorName) {
         etBookAuthor.setText(authorName);
@@ -178,7 +176,7 @@ public class BookEditFragment extends Fragment {
 
         switch (requestCode) {
             case AuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
-                selectedAuthor = (Author) data.getParcelableExtra("author");
+                selectedAuthor = data.getParcelableExtra("author");
                 setAuthor(selectedAuthor.getName());
                 break;
 

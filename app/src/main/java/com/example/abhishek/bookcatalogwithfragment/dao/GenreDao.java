@@ -26,8 +26,8 @@ public class GenreDao {
                 for(GenreBusinessModel businessModel : genreBusinessModelList){
                     genreDbModel = realm.where(GenreDbModel.class).equalTo(GenreDbModel.FIELD_ID, businessModel.getId()).findFirst();
                     if(genreDbModel==null){
-                        genreDbModel=realm.createObject(GenreDbModel.class);
-                        genreDbModel.setId(businessModel.getId());
+                        genreDbModel=realm.createObject(GenreDbModel.class, businessModel.getId());
+                      //  genreDbModel.setId(businessModel.getId());
                     }
                     genreDbModel.setName(businessModel.getName());
                 }

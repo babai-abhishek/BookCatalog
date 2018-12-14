@@ -23,13 +23,13 @@ import android.widget.Toast;
 
 import com.example.abhishek.bookcatalogwithfragment.Author.AuthorListFragment;
 import com.example.abhishek.bookcatalogwithfragment.Genre.GenreListFragment;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Author;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Book;
-import com.example.abhishek.bookcatalogwithfragment.Model.ApiModel.RealmModel.Genre;
 import com.example.abhishek.bookcatalogwithfragment.Network.ApiClient;
 import com.example.abhishek.bookcatalogwithfragment.Network.BookInterface;
 import com.example.abhishek.bookcatalogwithfragment.R;
 import com.example.abhishek.bookcatalogwithfragment.Util.KeyBoardManager;
+import com.example.abhishek.bookcatalogwithfragment.models.api.BookApiModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.AuthorBusinessModel;
+import com.example.abhishek.bookcatalogwithfragment.models.bl.GenreBusinessModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,8 +48,8 @@ public class BookAddFragment extends Fragment {
 
     final Calendar myCalendar = Calendar.getInstance();
     BookInterface bookService = ApiClient.getClient().create(BookInterface.class);
-    Genre selectedGenre = new Genre();
-    Author selectedAuthor = new Author();
+    GenreBusinessModel selectedGenre = new GenreBusinessModel();
+    AuthorBusinessModel selectedAuthor = new AuthorBusinessModel();
     TextView tvGenreType, tvAuthorName;
     public static final int REQUEST_CODE_ADD_AUTHOR = 0;
 
@@ -139,15 +139,6 @@ public class BookAddFragment extends Fragment {
 
                 fragment.show(transaction, "SelectAuthor");
 
-//                fragment.getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                    @Override
-//                    public void onDismiss(DialogInterface dialog) {
-//                        if(fragment.selectedAuthor!=null){
-//
-//                        }
-//                    }
-//                });
-
             }
         });
 
@@ -176,33 +167,30 @@ public class BookAddFragment extends Fragment {
         String lang = etNewBookLanguage.getText().toString().trim();
         String date = etNewBookPublishDate.getText().toString();
         int pages = Integer.parseInt(String.valueOf(etNewBookPages.getText().toString().equals("") ? 0 : etNewBookPages.getText().toString()));
-                /* String authId =  selectedAuthor.getId();
-                 String genreId = selectedGenre.getId();*/
-
         if (bookName.isEmpty() || lang.isEmpty() || date.isEmpty() || pages <= 0 ||
                 selectedAuthor.getId() == null || selectedGenre.getId() == null) {
             Toast.makeText(getActivity(), "Please fill all the fields correctly ", Toast.LENGTH_SHORT).show();
         } else {
-            createNewBookEntry(new Book(bookName, lang,
+            createNewBookEntry(new BookApiModel(bookName, lang,
                     date, pages,
-                    selectedAuthor.getId(), selectedGenre.getId()));
+                    selectedAuthor.getId(), selectedGenre.getId(), null));
         }
 
     }
 
-    private void createNewBookEntry(Book book) {
-        Call<Book> call = bookService.newBookEntry(book);
-        call.enqueue(new Callback<Book>() {
+    private void createNewBookEntry(BookApiModel book) {
+        Call<BookApiModel> call = bookService.newBookEntry(book);
+        call.enqueue(new Callback<BookApiModel>() {
             @Override
-            public void onResponse(Call<Book> call, Response<Book> response) {
-                Book book = response.body();
+            public void onResponse(Call<BookApiModel> call, Response<BookApiModel> response) {
+                BookApiModel book = response.body();
                 Log.d("#", " id of new book received " + book.getId());
                 Toast.makeText(getActivity(), "ID of new books is" + book.getId(), Toast.LENGTH_SHORT).show();
                 getActivity().onBackPressed();
             }
 
             @Override
-            public void onFailure(Call<Book> call, Throwable t) {
+            public void onFailure(Call<BookApiModel> call, Throwable t) {
                 Log.e("#", t.toString());
             }
         });
@@ -242,7 +230,7 @@ public class BookAddFragment extends Fragment {
 
         switch (requestCode) {
             case AuthorListFragment.REQUEST_CODE_SELECT_AUTHOR:
-                selectedAuthor = (Author) data.getParcelableExtra("author");
+                selectedAuthor = data.getParcelableExtra("author");
                 setAuthor();
                 break;
 

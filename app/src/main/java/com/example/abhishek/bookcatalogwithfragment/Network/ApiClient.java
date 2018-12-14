@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
     //public static final String BASE_URL = "https://book-directory.herokuapp.com/";
-    public static final String BASE_URL = "http://ec2-52-91-254-15.compute-1.amazonaws.com:3000/";
+    public static final String BASE_URL = "https://book-library-node.herokuapp.com/";
 
     private static Retrofit retrofit = null;
 

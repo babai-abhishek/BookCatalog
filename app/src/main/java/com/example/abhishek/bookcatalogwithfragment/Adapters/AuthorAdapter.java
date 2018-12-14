@@ -93,7 +93,8 @@ public class AuthorAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (authorList.size() < 1 || isLoading()) {
-            ((EmptyListViewHolder) holder).emptyListMessage.setText(isLoading() ? "Loading...." : "No items found!");
+            ((EmptyListViewHolder) holder).emptyListMessage.setText(isLoading() ? "Loading...." :
+                    "No items found!");
         } else {
             AuthorViewHolder authorViewHolder = (AuthorViewHolder) holder;
             final AuthorBusinessModel author = authorList.get(position);
