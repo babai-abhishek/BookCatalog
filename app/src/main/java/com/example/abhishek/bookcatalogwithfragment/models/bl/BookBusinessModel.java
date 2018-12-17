@@ -33,8 +33,8 @@ public class BookBusinessModel implements Parcelable {
         this.published = bookDbModel.getPublished();
         this.pages = bookDbModel.getPages();
         this.id = bookDbModel.getId();
-        this.genre = new GenreBusinessModel(null, bookDbModel.getId());
-        this.author = new AuthorBusinessModel(null, null, null, bookDbModel.getId());
+        this.genre = new GenreBusinessModel(null, bookDbModel.getGenreId());
+        this.author = new AuthorBusinessModel(null, null, null, bookDbModel.getAuthorId());
     }
 
     public BookBusinessModel(BookApiModel bookApiModel) {
@@ -43,8 +43,8 @@ public class BookBusinessModel implements Parcelable {
         this.published = bookApiModel.getPublished();
         this.pages = bookApiModel.getPages();
         this.id = bookApiModel.getId();
-        this.genre = new GenreBusinessModel(null, bookApiModel.getId());
-        this.author = new AuthorBusinessModel(null, null, null, bookApiModel.getId());
+        this.genre = new GenreBusinessModel(null, bookApiModel.getGenreId());
+        this.author = new AuthorBusinessModel(null, null, null, bookApiModel.getAuthorId());
     }
 
     protected BookBusinessModel(Parcel in) {

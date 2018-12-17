@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyToolbarTheme"
+        parent="@style/ThemeOverlay.AppCompat.Dark">
+        <item name="colorControlNormal">@color/cardview_light_background</item>
+        <item name="titleTextColor">@color/cardview_light_background</item>
+    </style>
 </resources>

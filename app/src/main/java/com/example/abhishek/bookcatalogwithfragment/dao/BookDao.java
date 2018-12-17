@@ -23,8 +23,7 @@ public class BookDao {
                     bookDbModel = realm.where(BookDbModel.class)
                             .equalTo(BookDbModel.FIELD_ID, bookBusinessModel.getId()).findFirst();
                     if(bookDbModel==null){
-                        bookDbModel = realm.createObject(BookDbModel.class);
-                        bookDbModel.setId(bookBusinessModel.getId());
+                        bookDbModel = realm.createObject(BookDbModel.class, bookBusinessModel.getId());
                     }
                     bookDbModel.setName(bookBusinessModel.getName());
                     bookDbModel.setLanguage(bookBusinessModel.getLanguage());

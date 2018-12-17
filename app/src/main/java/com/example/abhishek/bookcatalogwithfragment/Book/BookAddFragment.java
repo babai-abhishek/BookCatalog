@@ -179,12 +179,13 @@ public class BookAddFragment extends Fragment {
     }
 
     private void createNewBookEntry(BookApiModel book) {
+        Log.d("#", String.valueOf(book));
         Call<BookApiModel> call = bookService.newBookEntry(book);
         call.enqueue(new Callback<BookApiModel>() {
             @Override
             public void onResponse(Call<BookApiModel> call, Response<BookApiModel> response) {
                 BookApiModel book = response.body();
-                Log.d("#", " id of new book received " + book.getId());
+                Log.d("#", " id of new book received " + book);
                 Toast.makeText(getActivity(), "ID of new books is" + book.getId(), Toast.LENGTH_SHORT).show();
                 getActivity().onBackPressed();
             }

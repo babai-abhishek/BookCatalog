@@ -54,7 +54,7 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
 
     private LocalBroadcastManager broadcastManager = null;
     ProgressDialog mProgressDialog;
-    private boolean shouldReloadOnResume = false;
+    private boolean shouldReloadOnResume = true;
     boolean isBookLoaded = false;
 
     private static final String ACTION_BOOK_LIST_API_SUCCESS = "com.example.abhishek.bookcatalogwithfragment.api.books.all.result.success";
@@ -206,10 +206,10 @@ public class BookListFragment extends Fragment implements BookAdapter.SelectBook
         filter.addAction(ACTION_BOOK_LIST_API_SUCCESS);
         filter.addAction(ACTION_BOOK_LIST_API_FAILURE);
         broadcastManager.registerReceiver(broadcastReceiver, filter);
-       // if (shouldReloadOnResume) {
+        if (shouldReloadOnResume) {
             loadBooks();
-        /*}
-        shouldReloadOnResume = false;*/
+        }
+        shouldReloadOnResume = false;
     }
 
     @Override

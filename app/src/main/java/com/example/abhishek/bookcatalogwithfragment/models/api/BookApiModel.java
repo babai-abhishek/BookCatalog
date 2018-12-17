@@ -3,18 +3,41 @@ package com.example.abhishek.bookcatalogwithfragment.models.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by abhishek on 31/3/18.
  */
 
 public class BookApiModel implements Parcelable {
 
+    @SerializedName("name")
+    @Expose
     private String name;
+
+    @SerializedName("language")
+    @Expose
     private String language;
+
+    @SerializedName("published")
+    @Expose
     private String published;
+
+    @SerializedName("pages")
+    @Expose
     private int pages;
+
+    @SerializedName("authorId")
+    @Expose
     private String authorId;
+
+    @SerializedName("genreId")
+    @Expose
     private String genreId;
+
+    @SerializedName("id")
+    @Expose
     private String id;
 
     public BookApiModel() {
